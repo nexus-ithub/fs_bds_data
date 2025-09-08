@@ -1,0 +1,163 @@
+CREATE TABLE `address_polygon` (
+  `id` varchar(19) NOT NULL COMMENT '고유번호',
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',
+  `leg_dong_name` varchar(300) DEFAULT NULL,
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',
+  `lat` decimal(18,14) NOT NULL,
+  `lng` decimal(18,14) NOT NULL,
+  `polygon` geometry NOT NULL COMMENT '폴리곤',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  SPATIAL KEY `idx_lng` (`polygon`),
+  KEY `idx_leg_dong_code` (`leg_dong_code`),
+  KEY `idx_jibun` (`jibun`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `individual_announced_price` (
+  `key` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',
+  `special_div_code` varchar(1) DEFAULT NULL COMMENT '특수지구분코드',
+  `special_div_name` varchar(300) DEFAULT NULL COMMENT '특수지구분명',
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',
+  `year` varchar(4) DEFAULT NULL COMMENT '기준연도',
+  `month` varchar(2) DEFAULT NULL COMMENT '기준월',
+  `price` varchar(15) DEFAULT NULL COMMENT '개별공시지가',
+  `announce_date` varchar(10) DEFAULT NULL COMMENT '공시일자',
+  `is_standard` char(1) DEFAULT NULL COMMENT '표준지여부',
+  `data_date` varchar(10) DEFAULT NULL COMMENT '데이터 기준일자',
+  `sigungu_code` varchar(5) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `insert_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`key`),
+  UNIQUE KEY `idx_id_year_month` (`id`,`year`,`month`),
+  KEY `idx_leg_dong_code` (`leg_dong_code`),
+  KEY `idx_jibun` (`jibun`)
+) ENGINE=InnoDB AUTO_INCREMENT=36575416 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+CREATE TABLE `land_char_info` (
+  `key` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',
+  `div_code` char(1) DEFAULT NULL COMMENT '대장구분코드',
+  `div_name` varchar(300) DEFAULT NULL COMMENT '대장구분명',
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',
+  `land_serial_number` varchar(10) DEFAULT NULL COMMENT '토지일련번호',
+  `year` varchar(4) DEFAULT NULL COMMENT '기준연도',
+  `month` varchar(2) DEFAULT NULL COMMENT '기준월',
+  `jimok_code` varchar(2) DEFAULT NULL COMMENT '지목코드',
+  `jimok_name` varchar(20) DEFAULT NULL COMMENT '지목명',
+  `area` decimal(28,9) DEFAULT NULL COMMENT '면적',
+  `usage1_code` varchar(2) DEFAULT NULL COMMENT '용도지역코드1',
+  `usage1_name` varchar(300) DEFAULT NULL COMMENT '용도지역명1',
+  `usage2_code` varchar(2) DEFAULT NULL COMMENT '용도지역코드2',
+  `usage2_name` varchar(300) DEFAULT NULL COMMENT '용도지역명2',
+  `cur_use_code` varchar(3) DEFAULT NULL COMMENT '토지이용상황코드',
+  `cur_use` varchar(300) DEFAULT NULL COMMENT '토지이용상황',
+  `height_code` varchar(3) DEFAULT NULL COMMENT '지형높이코드',
+  `height` varchar(300) DEFAULT NULL COMMENT '지형높이',
+  `shape_code` varchar(2) DEFAULT NULL COMMENT '지형형상코드',
+  `shape` varchar(300) DEFAULT NULL COMMENT '지형형상',
+  `road_contact_code` varchar(2) DEFAULT NULL COMMENT '도로접면코드',
+  `road_contact` varchar(300) DEFAULT NULL COMMENT '도로접면',
+  `price` varchar(300) DEFAULT NULL COMMENT '공시지가',
+  `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',
+  `update_date` datetime DEFAULT NULL,
+  `insert_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`key`),
+  UNIQUE KEY `idx_id_year_month` (`id`,`year`,`month`),
+  KEY `idx_leg_dong_code` (`leg_dong_code`),
+  KEY `idx_leg_dong_name` (`leg_dong_name`),
+  KEY `idx_jibun` (`jibun`),
+  KEY `idx_jimok_name` (`jimok_name`),
+  KEY `idx_area` (`area`),
+  KEY `idx_usage1_name` (`usage1_name`),
+  KEY `idx_create_date` (`create_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=12871863 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `land_info` (
+  `id` varchar(19) NOT NULL COMMENT '고유번호',
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',
+  `div_code` char(1) DEFAULT NULL COMMENT '대장구분코드',
+  `div_name` varchar(300) DEFAULT NULL COMMENT '대장구분명',
+  `jimok_code` char(2) DEFAULT NULL COMMENT '지목코드',
+  `jimok_name` varchar(300) DEFAULT NULL COMMENT '지목명',
+  `area` decimal(28,9) DEFAULT NULL COMMENT '면적',
+  `poss_div_code` varchar(5) DEFAULT NULL COMMENT '소유구분코드',
+  `poss_div_name` varchar(300) DEFAULT NULL COMMENT '소유구분명',
+  `poss_person_num` varchar(10) DEFAULT NULL COMMENT '소유(공유)인수',
+  `accum_div_code` varchar(5) DEFAULT NULL COMMENT '축척구분코드',
+  `accum_div_name` varchar(300) DEFAULT NULL COMMENT '축척구분명',
+  `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',
+  `sigungu_code` varchar(5) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `insert_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_jibun` (`jibun`),
+  KEY `idx_leg_dong_code` (`leg_dong_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `land_usage_code` (
+  `code` char(6) NOT NULL COMMENT '용도지역지구코드',
+  `name` varchar(100) DEFAULT NULL COMMENT '용도지역지구코드명',
+  `div` varchar(100) DEFAULT NULL COMMENT '용도지역지구구분',
+  `law_name` varchar(200) DEFAULT NULL COMMENT '법률명',
+  `ar_gbn` varchar(1) DEFAULT NULL COMMENT '행위제한 구분',
+  `law_code` char(14) DEFAULT NULL COMMENT '법률코드',
+  `byul_yn` char(1) DEFAULT NULL COMMENT '별표구분',
+  `exec_dt` varchar(8) DEFAULT NULL COMMENT '시행일자',
+  `jo_num` char(6) DEFAULT NULL COMMENT '조번호',
+  `jo_sub_num` char(32) DEFAULT NULL COMMENT '항호번호',
+  `rec_seq_no` int(4) DEFAULT NULL COMMENT '등록일련번호',
+  `parent_code` char(6) DEFAULT NULL COMMENT '상위 용도지역지구 코드 ',
+  `delete_date` varchar(8) DEFAULT NULL COMMENT '폐지일자',
+  `delete_text` varchar(200) DEFAULT NULL COMMENT '폐지사유',
+  `terms_num` int(10) DEFAULT NULL COMMENT '용어번호',
+  `reg_date` varchar(8) DEFAULT NULL COMMENT '최초등록일시',
+  `update_date` varchar(8) DEFAULT NULL COMMENT '최종수정일시 ',
+  PRIMARY KEY (`code`),
+  KEY `idx_usage_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+CREATE TABLE `land_usage_info` (
+  `key` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',
+  `div_code` char(1) DEFAULT NULL COMMENT '대장구분코드',
+  `div_name` varchar(300) DEFAULT NULL COMMENT '대장구분명',
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',
+  `drawing_number` varchar(33) DEFAULT NULL COMMENT '도면번호',
+  `conflict_code` varchar(200) DEFAULT NULL COMMENT '저촉여부코드',
+  `conflict` varchar(300) DEFAULT NULL COMMENT '저촉여부',
+  `usage_code` varchar(300) DEFAULT NULL COMMENT '용도지역지구코드목록',
+  `usage_name` varchar(300) DEFAULT NULL COMMENT '용도지역지구명목록',
+  `register_date` varchar(10) DEFAULT NULL COMMENT '등록일자',
+  `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',
+  `sigungu_code` varchar(5) DEFAULT NULL,
+  `etc` varchar(100) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `insert_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`key`),
+  KEY `idx_id` (`id`),
+  KEY `idx_leg_dong_code` (`leg_dong_code`),
+  KEY `idx_jibun` (`jibun`)
+) ENGINE=InnoDB AUTO_INCREMENT=8783539 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `leg_dong_codes` (
+  `leg_dong_code` varchar(10) NOT NULL,
+  `leg_dong_name` varchar(48) DEFAULT NULL,
+  `deleted` varchar(12) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`leg_dong_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;

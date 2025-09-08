@@ -1,0 +1,122 @@
+
+CREATE TABLE `address_info` (
+  `address_id` char(25) NOT NULL COMMENT '관리번호',
+  `road_name_code` char(12) DEFAULT NULL COMMENT '도로명코드 ',
+  `eupmyeondong_serial_num` char(2) DEFAULT NULL COMMENT '읍면동일련번호',
+  `is_underground` char(1) DEFAULT NULL COMMENT '지하여부',
+  `building_main_num` int(11) DEFAULT NULL COMMENT '건물본번',
+  `building_sub_num` int(11) DEFAULT NULL COMMENT '건물부번',
+  `basic_local_num` char(5) DEFAULT NULL COMMENT '기초구역번호',
+  `change_reason_code` char(2) DEFAULT NULL COMMENT '변경사유코드',
+  `noti_date` char(8) DEFAULT NULL COMMENT '고시일자',
+  `prev_road_addr` char(25) DEFAULT NULL COMMENT '변경전도로명주소',
+  `detail_address_avail` char(1) DEFAULT NULL COMMENT '상세주소부여여부',
+  `deleted_yn` char(1) NOT NULL DEFAULT 'N',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`address_id`),
+  KEY `idx_road_code` (`road_name_code`),
+  KEY `idx_epd_serial` (`eupmyeondong_serial_num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+CREATE TABLE `additional_info` (
+  `address_id` char(25) NOT NULL COMMENT '관리번호',
+  `admin_dong_code` char(10) DEFAULT NULL COMMENT '행정동코드',
+  `admin_dong_name` char(20) DEFAULT NULL COMMENT '행정동명',
+  `zip_code` char(5) DEFAULT NULL COMMENT '우편번호',
+  `zip_serial_num` char(3) DEFAULT NULL COMMENT '우편일련번호',
+  `huge_delivery_name` char(40) DEFAULT NULL COMMENT '다량배달처명',
+  `building_leg_name` char(40) DEFAULT NULL COMMENT '건축물대장 건물명 ',
+  `local_building_name` char(40) DEFAULT NULL COMMENT '시군구 건물명',
+  `is_apartment_house` varchar(45) DEFAULT NULL COMMENT '공동주택여부',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`address_id`),
+  KEY `idx_building_name` (`local_building_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `building_addr` (
+  `leg_dong_code` char(10) DEFAULT NULL COMMENT '법정동코드',
+  `sido_name` char(40) DEFAULT NULL COMMENT '시도명',
+  `sigungu_name` char(40) DEFAULT NULL COMMENT '시군구명',
+  `leg_eupmyeondong_name` char(40) DEFAULT NULL COMMENT '법정읍면동명',
+  `leg_li_name` char(40) DEFAULT NULL COMMENT '법정리명',
+  `is_mountain` char(1) DEFAULT NULL COMMENT '산 여부\n0:대지, 1:산',
+  `jibun_main_num` int(11) DEFAULT NULL COMMENT '지번본번 (번지)',
+  `jibun_sub_num` int(11) DEFAULT NULL COMMENT '지번부번(호)',
+  `road_name_code` char(12) DEFAULT NULL COMMENT '도로명코드\n시군구코드(5) + 도로명번호(7)',
+  `road_name` char(80) DEFAULT NULL COMMENT '도로명 ',
+  `is_underground` char(1) DEFAULT NULL COMMENT '0:지상, 1:지하, 2:공중',
+  `building_main_num` int(11) DEFAULT NULL COMMENT '건물본번',
+  `building_sub_num` int(11) DEFAULT NULL COMMENT '빌딩부번',
+  `building_leg_name` char(40) DEFAULT NULL COMMENT '건축물대장 건물명 ',
+  `build_detail_name` char(100) DEFAULT NULL,
+  `building_id` char(25) NOT NULL COMMENT '건물관리번호',
+  `eupmyeondong_serial_num` char(2) DEFAULT NULL COMMENT '읍면동 일련번호',
+  `admin_dong_code` char(10) DEFAULT NULL COMMENT '행정동코드\n* 참고용',
+  `admin_dong_name` char(40) DEFAULT NULL COMMENT '행정동명\n* 참고용',
+  `zip_code` char(5) DEFAULT NULL COMMENT '우편번호\n2015. 8. 1 이후 기초구역번호(신우편번호) 제공',
+  `zip_serial_num` char(3) DEFAULT NULL COMMENT '우편일련번호\n2015. 8. 1 이후 미제공(NULL)',
+  `huge_delivery_name` char(40) DEFAULT NULL COMMENT '다량배달처명\n2015. 8. 1 이후 미제공(NULL)',
+  `move_reason_code` char(2) DEFAULT NULL COMMENT '이동사유코드\n31 : 신규, 34 : 변동, 63 : 폐지, 72 : 건물군내 일부 건물 폐지, 73 : 건물군내 일부 건물 생성',
+  `release_date` char(8) DEFAULT NULL COMMENT '고시일자',
+  `prev_road_addr` char(25) DEFAULT NULL COMMENT '변동전도로명주소',
+  `local_building_name` char(40) DEFAULT NULL COMMENT '시군구용 건물명 ',
+  `is_apartment_house` char(1) DEFAULT NULL COMMENT '공동주택여부\n0:비공동주택, 1:공동주택',
+  `basic_local_num` char(5) DEFAULT NULL COMMENT '기초구역번호',
+  `detail_address_avail` char(1) DEFAULT NULL COMMENT '상세주소여부\n\n0:미부여, 1:부여',
+  `note1` char(15) DEFAULT NULL COMMENT '비고1',
+  `note2` char(15) DEFAULT NULL COMMENT '비고2',
+  `deleted_yn` char(1) NOT NULL DEFAULT 'N',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`building_id`),
+  KEY `update` (`sido_name`,`leg_eupmyeondong_name`,`sigungu_name`,`jibun_main_num`,`jibun_sub_num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `jibun_info` (
+  `address_id` char(25) NOT NULL COMMENT '관리번호',
+  `serial_num` char(3) NOT NULL COMMENT '일련번호',
+  `leg_dong_code` char(10) DEFAULT NULL COMMENT '법정동코드',
+  `sido_name` char(20) DEFAULT NULL COMMENT '시도명',
+  `sigungu_name` char(20) DEFAULT NULL COMMENT '시군구명',
+  `leg_eupmyeondong_name` char(20) DEFAULT NULL COMMENT '법정읍면동명',
+  `leg_li_name` char(20) DEFAULT NULL COMMENT '법정리명',
+  `is_mountain` char(1) DEFAULT NULL COMMENT '산여부\n0: 대지, 1:산 ',
+  `jibun_main_num` int(11) DEFAULT NULL COMMENT '지번본번',
+  `jibun_sub_num` int(11) DEFAULT NULL COMMENT '지번부번',
+  `is_main_jibun` char(1) DEFAULT NULL COMMENT '대표여부',
+  `deleted_yn` char(1) NOT NULL DEFAULT 'N',
+  `update_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`address_id`,`serial_num`),
+  KEY `idx_jibun_main_num` (`jibun_main_num`),
+  KEY `idx_jibun_sub_num` (`jibun_sub_num`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+
+
+CREATE TABLE `road_code_info` (
+  `road_name_code` char(12) NOT NULL COMMENT '도로명 코드',
+  `road_name` char(80) DEFAULT NULL COMMENT '더러먕',
+  `road_name_roman` char(80) DEFAULT NULL COMMENT '도로명 로마자',
+  `eupmyeondong_serial_num` char(2) NOT NULL COMMENT '읍면동 일련번호',
+  `sido_name` char(20) DEFAULT NULL COMMENT '시도명',
+  `sido_name_roman` char(40) DEFAULT NULL COMMENT '시도 로마자',
+  `sigungu_name` char(20) DEFAULT NULL COMMENT '시군구명',
+  `sigungu_name_roman` char(40) DEFAULT NULL COMMENT '시군구명 로마자 ',
+  `eupmyeondong_name` char(20) DEFAULT NULL COMMENT '읍면동명',
+  `eupmyeondong_name_roman` char(40) DEFAULT NULL COMMENT '읍면동 로마자',
+  `eupmyeondong_val` char(1) DEFAULT NULL COMMENT '읍면동구분',
+  `eupmyeondong_code` char(3) DEFAULT NULL COMMENT '읍면동코드',
+  `in_use` char(1) DEFAULT NULL COMMENT '사용여부',
+  `change_reason` char(1) DEFAULT NULL COMMENT '변경사유',
+  `chage_history` varchar(45) DEFAULT NULL COMMENT '변경이력정보',
+  `noti_date` char(8) DEFAULT NULL COMMENT '고시일자',
+  `cancel_date` char(8) DEFAULT NULL COMMENT '말소일자',
+  `update_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`road_name_code`,`eupmyeondong_serial_num`),
+  KEY `idx_road_name` (`road_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
