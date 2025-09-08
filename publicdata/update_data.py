@@ -17,7 +17,7 @@ from utils.logger import create_logger
 from utils.files import read_csv
 import geopandas as gpd
 import csv
-
+import asyncio
 
 DEBUG = False
 
@@ -221,7 +221,7 @@ def insertDataToNewTable(cursor, path, type, known_length, header_key, delimiter
 
 def exist_table(cursor, table_name):
     cursor.execute(
-        f"SELECT count(*) as count FROM information_schema.TABLES WHERE (TABLE_SCHEMA = 'fs_building') AND (TABLE_NAME = '{table_name}')")
+        f"SELECT count(*) as count FROM information_schema.TABLES WHERE (TABLE_SCHEMA = 'fs_bds') AND (TABLE_NAME = '{table_name}')")
     result_exist = cursor.fetchone()
     return result_exist['count'] > 0
 
@@ -317,21 +317,21 @@ def update_land_char_data(cursor, path, type):
 
         # indexing
         logger.info(f"create idx_id_year_month...")
-        cursor.execute("CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_building`.`land_char_info_new` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT")
+        cursor.execute("CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_bds`.`land_char_info_new` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT")
         logger.info(f"create idx_leg_dong_code...")
-        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_building`.`land_char_info_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_bds`.`land_char_info_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_leg_dong_name...")
-        cursor.execute("CREATE INDEX `idx_leg_dong_name` ON `fs_building`.`land_char_info_new` (leg_dong_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_leg_dong_name` ON `fs_bds`.`land_char_info_new` (leg_dong_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_jibun...")
-        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_building`.`land_char_info_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_bds`.`land_char_info_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_jimok_name...")
-        cursor.execute("CREATE INDEX `idx_jimok_name` ON `fs_building`.`land_char_info_new` (jimok_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_jimok_name` ON `fs_bds`.`land_char_info_new` (jimok_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_area...")
-        cursor.execute("CREATE INDEX `idx_area` ON `fs_building`.`land_char_info_new` (area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_area` ON `fs_bds`.`land_char_info_new` (area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_usage1_name...")
-        cursor.execute("CREATE INDEX `idx_usage1_name` ON `fs_building`.`land_char_info_new` (usage1_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_usage1_name` ON `fs_bds`.`land_char_info_new` (usage1_name) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_create_date...")
-        cursor.execute("CREATE INDEX `idx_create_date` ON `fs_building`.`land_char_info_new` (create_date desc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_create_date` ON `fs_bds`.`land_char_info_new` (create_date desc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
         change_as_new_table(cursor, "land_char_info")
 
@@ -352,11 +352,11 @@ def update_land_usage_data(cursor, path, type):
         update_count = insertDataToNewTable(cursor, path, type, 15, "고유번호")
 
         logger.info(f"create idx_id...")
-        cursor.execute("CREATE INDEX `idx_id` ON `fs_building`.`land_usage_info_new` (id) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_id` ON `fs_bds`.`land_usage_info_new` (id) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_leg_dong_code...")
-        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_building`.`land_usage_info_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_bds`.`land_usage_info_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_jibun...")
-        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_building`.`land_usage_info_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_bds`.`land_usage_info_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
         change_as_new_table(cursor, "land_usage_info")
 
@@ -378,17 +378,17 @@ def update_building_leg_headline(cursor, path, type):
 
     logger.info(f"make leg_dong_code_val...")
     cursor.execute(
-        "UPDATE fs_building.building_leg_headline_new SET leg_dong_code_val = concat(sigungu_code, leg_dong_code)")
+        "UPDATE fs_bds.building_leg_headline_new SET leg_dong_code_val = concat(sigungu_code, leg_dong_code)")
 
     logger.info(f"create idx_bun...")
     cursor.execute(
-        "CREATE INDEX `idx_bun` ON `fs_building`.`building_leg_headline_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_bun` ON `fs_bds`.`building_leg_headline_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_ji...")
     cursor.execute(
-        "CREATE INDEX `idx_ji` ON `fs_building`.`building_leg_headline_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_ji` ON `fs_bds`.`building_leg_headline_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_leg_dong_code...")
     cursor.execute(
-        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_building`.`building_leg_headline_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_leg_headline_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
 
     # make building search table
@@ -396,38 +396,38 @@ def update_building_leg_headline(cursor, path, type):
 
     logger.info(f"create building_search_new...")
     cursor.execute(
-        "create table fs_building.building_search_new (primary key (building_id)) "
+        "create table fs_bds.building_search_new (primary key (building_id)) "
         "AS SELECT building_id, site_loc, sigungu_code, bun, ji, leg_dong_code_val, use_approval_date, total_floor_area, land_area "
-        "FROM fs_building.building_leg_headline")
+        "FROM fs_bds.building_leg_headline")
 
     logger.info(f"create idx_site_loc...")
     cursor.execute(
-        "CREATE INDEX `idx_site_loc` ON `fs_building`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_site_loc` ON `fs_bds`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_sigungu_code...")
     cursor.execute(
-        "CREATE INDEX `idx_sigungu_code` ON `fs_building`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_sigungu_code` ON `fs_bds`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_land_area...")
     cursor.execute(
-        "CREATE INDEX `idx_land_area` ON `fs_building`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_land_area` ON `fs_bds`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_total_floor_area...")
     cursor.execute(
-        "CREATE INDEX `idx_total_floor_area` ON `fs_building`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_total_floor_area` ON `fs_bds`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_use_approval_date...")
     cursor.execute(
-        "CREATE INDEX `idx_use_approval_date` ON `fs_building`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_bun...")
     cursor.execute(
-        "CREATE INDEX `idx_bun` ON `fs_building`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_bun` ON `fs_bds`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_ji...")
     cursor.execute(
-        "CREATE INDEX `idx_ji` ON `fs_building`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_ji` ON `fs_bds`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_leg_dong_code...")
     cursor.execute(
-        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_building`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     change_as_new_table(cursor, "building_search")
 
@@ -449,22 +449,22 @@ def update_building_floor_info(cursor, path, type):
 
     logger.info(f"make leg_dong_code_val...")
     cursor.execute(
-        "UPDATE fs_building.building_floor_info_new SET leg_dong_code_val = concat(sigungu_code, leg_dong_code)")
+        "UPDATE fs_bds.building_floor_info_new SET leg_dong_code_val = concat(sigungu_code, leg_dong_code)")
 
     logger.info(f"create idx_building_id...")
     cursor.execute(
-        "CREATE INDEX `idx_building_id` ON `fs_building`.`building_floor_info_new` (building_id) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_building_id` ON `fs_bds`.`building_floor_info_new` (building_id) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_bun...")
     cursor.execute(
-        "CREATE INDEX `idx_bun` ON `fs_building`.`building_floor_info_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_bun` ON `fs_bds`.`building_floor_info_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
     logger.info(f"create idx_ji...")
     cursor.execute(
-        "CREATE INDEX `idx_ji` ON `fs_building`.`building_floor_info_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_ji` ON `fs_bds`.`building_floor_info_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     logger.info(f"create idx_leg_dong_code...")
     cursor.execute(
-        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_building`.`building_floor_info_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_floor_info_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
     change_as_new_table(cursor, "building_floor_info")
 
@@ -484,11 +484,11 @@ def update_individual_announce_price_data(cursor, path, type):
 
         # indexing
         logger.info(f"create idx_id_year_month...")
-        cursor.execute("CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_building`.`individual_announced_price_new` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT")
+        cursor.execute("CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_bds`.`individual_announced_price_new` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT")
         logger.info(f"create idx_leg_dong_code...")
-        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_building`.`individual_announced_price_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_leg_dong_code` ON `fs_bds`.`individual_announced_price_new` (leg_dong_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
         logger.info(f"create idx_jibun...")
-        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_building`.`individual_announced_price_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        cursor.execute("CREATE INDEX `idx_jibun` ON `fs_bds`.`individual_announced_price_new` (jibun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
         change_as_new_table(cursor, "individual_announced_price")
 
@@ -530,7 +530,7 @@ def update_address_polygon_data(cursor, path):
         # if DEBUG:
         #     logger.info(f"{len(row)} , {row}")
 
-        sql = (f"INSERT INTO fs_building.address_polygon ( "
+        sql = (f"INSERT INTO fs_bds.address_polygon ( "
                f"id, leg_dong_code, leg_dong_name, jibun, lat, lng, polygon) "
                f"VALUES ( "
                f"%s, %s, %s, %s,"
@@ -606,7 +606,7 @@ def update_distinct_polygon_data(cursor, path):
         if DEBUG:
             logger.info(f"{len(row)} , {row}")
 
-        sql = (f"INSERT INTO fs_building.district_polygon ( "
+        sql = (f"INSERT INTO fs_bds.district_polygon ( "
                f"code, code_name, div_code, div_code_name, "
                f"sigungu_code, sigungu_name, leg_dong_code, leg_dong_name, "
                f"area, lat, lng, "
@@ -703,8 +703,8 @@ def update_search_table(cursor):
     logger.info(f'UPDATE_SEARCH_INFO_QUERY ...')
     cursor.execute(UPDATE_SEARCH_INFO_QUERY)
 
-sql = "SELECT * FROM fs_building.public_data_files WHERE cancel_yn = 'N' and update_status != 'Y' and update_status != 'R' order by create_date asc;"
-# sql = "SELECT * FROM fs_building.public_data_files WHERE cancel_yn = 'N'"
+sql = "SELECT * FROM fs_bds.public_data_files WHERE cancel_yn = 'N' and update_status != 'Y' and update_status != 'R' order by create_date asc;"
+# sql = "SELECT * FROM fs_bds.public_data_files WHERE cancel_yn = 'N'"
 
 mysql_cursor.execute(sql)
 files = mysql_cursor.fetchall()
@@ -713,81 +713,87 @@ logger.info(f"fetch.. files : {len(files)}")
 
 need_search_db_update = False
 
-for file in files:
-    update_failed = False
-    file_id = file['id']
-    file_type = file['type']
-    update_count = 0
-    tmp_dest = None
-    file_path = file['path']
-    memo = file['memo']
-    create_date = file['create_date']
+async def main():
+    for file in files:
+        update_failed = False
+        file_id = file['id']
+        file_type = file['type']
+        update_count = 0
+        tmp_dest = None
+        file_path = file['path']
+        memo = file['memo']
+        create_date = file['create_date']
 
-    try:
-        if not DEBUG:
-            sql_update = f"UPDATE fs_building.public_data_files SET update_status = 'R', update_start_date = now() WHERE id = '{file_id}'"
-            logger.info(f'sql update {sql_update}')
-            mysql_cursor.execute(sql_update)
-
-        if not DEBUG:
-            bot.send_message(f"[{config_name}] 데이터 업데이트 시작 > {get_dataname_by_type(file_type)}, memo : {memo}")
-
-        filename = os.path.basename(file_path)
-        if pathlib.Path(filename).suffix.lower() == '.zip':
-            tmp_dest = f'{CUR_PATH}/data/tmp_{datetime.datetime.today().strftime("%Y-%m-%d_%H_%M_%S")}'
-            logger.info(f"unzip file -> {filename} to {tmp_dest}")
-            # zipfile = zipfile.ZipFile(path)
-            with zipfile.ZipFile(file_path, 'r') as zf:
-                logger.info('open success')
-                zipinfo = zf.infolist()
-                logger.info(f'zipinfo {zipinfo}')
-                for info in zipinfo:
-                    info.filename = info.filename.encode('cp437').decode('euc-kr')
-                    logger.info(f"unzip ... {info.filename}")
-                    zf.extract(info, path=tmp_dest)
-
-                for info in zipinfo:
-                    update_count += update_data(mysql_cursor, f"{tmp_dest}/{info.filename}", file_type)
-
-                zf.close()
-
-        else:
-            logger.info(f"update data -> {file_path}")
-            update_count = update_data(mysql_cursor, file_path, file_type)
-
-    except Exception as e:
-        logger.error(f'update failed {e}')
-        if not DEBUG:
-            bot.send_message(f"[{config_name}] 데이터 업데이트 실패 > {get_dataname_by_type(file_type)}, memo : {memo}, error : {e}")
-
-        update_failed = True
-    finally:
-        logger.info(f'end {update_count}')
-        if not update_failed:
-            if file_type == 'building_addr' or file_type == 'land_info':
-                need_search_db_update = True
+        try:
             if not DEBUG:
-                bot.send_message(f"[{config_name}] 데이터 업데이트 완료!! > {get_dataname_by_type(file_type)}, memo : {memo}, update_count : {update_count}")
+                sql_update = f"UPDATE fs_bds.public_data_files SET update_status = 'R', update_start_date = now() WHERE id = '{file_id}'"
+                logger.info(f'sql update {sql_update}')
+                mysql_cursor.execute(sql_update)
 
-        # mysql_con.commit()
-        if not DEBUG:
-            sql_update = f"UPDATE fs_building.public_data_files SET update_status = '{'F' if update_failed else 'Y'}', update_end_date = now(), update_count = {update_count} WHERE id = '{file_id}'"
-            logger.info(f'sql update {sql_update}')
-            mysql_cursor.execute(sql_update)
-        if tmp_dest is not None:
-            shutil.rmtree(tmp_dest)
-        if not update_failed and file_path is not None:
-            os.remove(file_path)
+            if not DEBUG:
+                await bot.send_message(f"[{config_name}] 데이터 업데이트 시작 > {get_dataname_by_type(file_type)}, memo : {memo}")
+
+            filename = os.path.basename(file_path)
+            if pathlib.Path(filename).suffix.lower() == '.zip':
+                tmp_dest = f'{CUR_PATH}/data/tmp_{datetime.datetime.today().strftime("%Y-%m-%d_%H_%M_%S")}'
+                logger.info(f"unzip file -> {filename} to {tmp_dest}")
+                # zipfile = zipfile.ZipFile(path)
+                with zipfile.ZipFile(file_path, 'r') as zf:
+                    logger.info('open success')
+                    zipinfo = zf.infolist()
+                    logger.info(f'zipinfo {zipinfo}')
+                    for info in zipinfo:
+                        info.filename = info.filename.encode('cp437', errors='replace').decode('euc-kr', errors='replace')
+                        logger.info(f"unzip ... {info.filename}")
+                        zf.extract(info, path=tmp_dest)
+
+                    for info in zipinfo:
+                        update_count += update_data(mysql_cursor, f"{tmp_dest}/{info.filename}", file_type)
+
+                    zf.close()
+
+            else:
+                logger.info(f"update data -> {file_path}")
+                update_count = update_data(mysql_cursor, file_path, file_type)
+
+        except Exception as e:
+            logger.error(f'update failed {e}')
+            if not DEBUG:
+                await bot.send_message(f"[{config_name}] 데이터 업데이트 실패 > {get_dataname_by_type(file_type)}, memo : {memo}, error : {e}")
+
+            update_failed = True
+        finally:
+            logger.info(f'end {update_count}')
+            if not update_failed:
+                if file_type == 'building_addr' or file_type == 'land_info':
+                    need_search_db_update = True
+                if not DEBUG:
+                    await bot.send_message(f"[{config_name}] 데이터 업데이트 완료!! > {get_dataname_by_type(file_type)}, memo : {memo}, update_count : {update_count}")
+
+            # mysql_con.commit()
+            if not DEBUG:
+                sql_update = f"UPDATE fs_bds.public_data_files SET update_status = '{'F' if update_failed else 'Y'}', update_end_date = now(), update_count = {update_count} WHERE id = '{file_id}'"
+                logger.info(f'sql update {sql_update}')
+                mysql_cursor.execute(sql_update)
+            if tmp_dest is not None:
+                shutil.rmtree(tmp_dest)
+            if not update_failed and file_path is not None:
+                os.remove(file_path)
 
 
-if need_search_db_update:
-    try:
-        bot.send_message(f"[{config_name}] 검색DB 업데이트 시작")
-        update_search_table(mysql_cursor)
-        bot.send_message(f"[{config_name}] 검색DB 업데이트 완료")
-    except Exception as e:
-        bot.send_message(f"[{config_name}] 검색DB 업데이트 실패")
+    if need_search_db_update:
+        try:
+            await bot.send_message(f"[{config_name}] 검색DB 업데이트 시작")
+            update_search_table(mysql_cursor)
+            await bot.send_message(f"[{config_name}] 검색DB 업데이트 완료")
+        except Exception as e:
+            await bot.send_message(f"[{config_name}] 검색DB 업데이트 실패")
 
-mysql_con.commit()
-mysql_con.close()
-# mysql_con_ac.close()
+    mysql_con.commit()
+    mysql_con.close()
+    # mysql_con_ac.close()
+
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

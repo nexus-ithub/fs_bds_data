@@ -13,11 +13,12 @@ CREATE TABLE `address_info` (
   `detail_address_avail` char(1) DEFAULT NULL COMMENT '상세주소부여여부',
   `deleted_yn` char(1) NOT NULL DEFAULT 'N',
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `create_date` datetime DEFAULT current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`address_id`),
   KEY `idx_road_code` (`road_name_code`),
   KEY `idx_epd_serial` (`eupmyeondong_serial_num`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
 
 CREATE TABLE `additional_info` (
   `address_id` char(25) NOT NULL COMMENT '관리번호',
@@ -30,11 +31,10 @@ CREATE TABLE `additional_info` (
   `local_building_name` char(40) DEFAULT NULL COMMENT '시군구 건물명',
   `is_apartment_house` varchar(45) DEFAULT NULL COMMENT '공동주택여부',
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `create_date` datetime DEFAULT current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`address_id`),
   KEY `idx_building_name` (`local_building_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 CREATE TABLE `building_addr` (
   `leg_dong_code` char(10) DEFAULT NULL COMMENT '법정동코드',
@@ -70,10 +70,10 @@ CREATE TABLE `building_addr` (
   `note2` char(15) DEFAULT NULL COMMENT '비고2',
   `deleted_yn` char(1) NOT NULL DEFAULT 'N',
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `create_date` datetime DEFAULT current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`building_id`),
   KEY `update` (`sido_name`,`leg_eupmyeondong_name`,`sigungu_name`,`jibun_main_num`,`jibun_sub_num`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 CREATE TABLE `jibun_info` (
@@ -89,12 +89,12 @@ CREATE TABLE `jibun_info` (
   `jibun_sub_num` int(11) DEFAULT NULL COMMENT '지번부번',
   `is_main_jibun` char(1) DEFAULT NULL COMMENT '대표여부',
   `deleted_yn` char(1) NOT NULL DEFAULT 'N',
-  `update_date` datetime DEFAULT NULL,
-  `create_date` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`address_id`,`serial_num`),
   KEY `idx_jibun_main_num` (`jibun_main_num`),
   KEY `idx_jibun_sub_num` (`jibun_sub_num`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 CREATE TABLE `road_code_info` (
@@ -115,8 +115,8 @@ CREATE TABLE `road_code_info` (
   `chage_history` varchar(45) DEFAULT NULL COMMENT '변경이력정보',
   `noti_date` char(8) DEFAULT NULL COMMENT '고시일자',
   `cancel_date` char(8) DEFAULT NULL COMMENT '말소일자',
-  `update_date` datetime DEFAULT NULL,
-  `create_date` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`road_name_code`,`eupmyeondong_serial_num`),
   KEY `idx_road_name` (`road_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;

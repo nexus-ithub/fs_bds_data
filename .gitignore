@@ -63,3 +63,7 @@ uploads/
 
 
 ./test
+
+.vscode
+config/ 
+publicdata/data/

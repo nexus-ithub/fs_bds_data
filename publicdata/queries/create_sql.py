@@ -1,84 +1,84 @@
 
 
 CREATE_NEW_INDIVIDUAL_ANNOUNCED_PRICE \
-    = "create table individual_announced_price_new\
-(\
-    `key`            int auto_increment primary key,\
-    id               varchar(19)                          null comment '고유번호',\
-    leg_dong_code    varchar(10)                          null comment '법정동코드',\
-    leg_dong_name    varchar(300)                         null comment '법정동명',\
-    special_div_code varchar(1)                           null comment '특수지구분코드',\
-    special_div_name varchar(300)                         null comment '특수지구분명',\
-    jibun            varchar(9)                           null comment '지번',\
-    year             varchar(4)                           null comment '기준연도',\
-    month            varchar(2)                           null comment '기준월',\
-    price            varchar(15)                          null comment '개별공시지가',\
-    announce_date    varchar(10)                          null comment '공시일자',\
-    is_standard      char                                 null comment '표준지여부',\
-    data_date        varchar(10)                          null comment '데이터 기준일자',\
-    sigungu_code     varchar(5)                           null,\
-    update_date      datetime                             null,\
-    insert_date      datetime default current_timestamp() null\
-);"
+    = "CREATE TABLE `individual_announced_price_new` (\
+  `key` int(11) NOT NULL AUTO_INCREMENT,\
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',\
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',\
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',\
+  `special_div_code` varchar(1) DEFAULT NULL COMMENT '특수지구분\코드',\
+  `special_div_name` varchar(300) DEFAULT NULL COMMENT '특수지구분명',\
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',\
+  `year` varchar(4) DEFAULT NULL COMMENT '기준연도',\
+  `month` varchar(2) DEFAULT NULL COMMENT '기준월',\
+  `price` varchar(15) DEFAULT NULL COMMENT '개별공시지가',\
+  `announce_date` varchar(10) DEFAULT NULL COMMENT '공시일자',\
+  `is_standard` char(1) DEFAULT NULL COMMENT '표준지여부',\
+  `data_date` varchar(10) DEFAULT NULL COMMENT '데이터 기준일자',\
+  `sigungu_code` varchar(5) DEFAULT NULL,\
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
+  `created_at` datetime DEFAULT current_timestamp(),\
+  PRIMARY KEY (`key`),\
+) ENGINE=InnoDB AUTO_INCREMENT=37466942 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;"
 
 
 CREATE_NEW_LAND_CHAR_INFO \
-    = "create table land_char_info_new\
-(\
-    `key`              int auto_increment primary key,\
-    id                 varchar(19)                          null comment '고유번호',\
-    leg_dong_code      varchar(10)                          null comment '법정동코드',\
-    leg_dong_name      varchar(300)                         null comment '법정동명',\
-    div_code           char                                 null comment '대장구분코드',\
-    div_name           varchar(300)                         null comment '대장구분명',\
-    jibun              varchar(9)                           null comment '지번',\
-    land_serial_number varchar(10)                          null comment '토지일련번호',\
-    year               varchar(4)                           null comment '기준연도',\
-    month              varchar(2)                           null comment '기준월',\
-    jimok_code         varchar(2)                           null comment '지목코드',\
-    jimok_name         varchar(20)                          null comment '지목명',\
-    area               decimal(28, 9)                       null comment '면적',\
-    usage1_code        varchar(2)                           null comment '용도지역코드1',\
-    usage1_name        varchar(300)                         null comment '용도지역명1',\
-    usage2_code        varchar(2)                           null comment '용도지역코드2',\
-    usage2_name        varchar(300)                         null comment '용도지역명2',\
-    cur_use_code       varchar(3)                           null comment '토지이용상황코드',\
-    cur_use            varchar(300)                         null comment '토지이용상황',\
-    height_code        varchar(3)                           null comment '지형높이코드',\
-    height             varchar(300)                         null comment '지형높이',\
-    shape_code         varchar(2)                           null comment '지형형상코드',\
-    shape              varchar(300)                         null comment '지형형상',\
-    road_contact_code  varchar(2)                           null comment '도로접면코드',\
-    road_contact       varchar(300)                         null comment '도로접면',\
-    price              varchar(300)                         null comment '공시지가',\
-    create_date        varchar(10)                          null comment '데이터기준일자',\
-    update_date        datetime                             null,\
-    insert_date        datetime default current_timestamp() null\
-);"
+    = "CREATE TABLE `land_char_info_new` (\
+  `key` int(11) NOT NULL AUTO_INCREMENT,\
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',\
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',\
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',\
+  `div_code` char(1) DEFAULT NULL COMMENT '대장구분코드',\
+  `div_name` varchar(300) DEFAULT NULL COMMENT '대장구분명',\
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',\
+  `land_serial_number` varchar(10) DEFAULT NULL COMMENT '토지일련번호',\
+  `year` varchar(4) DEFAULT NULL COMMENT '기준연도',\
+  `month` varchar(2) DEFAULT NULL COMMENT '기준월',\
+  `jimok_code` varchar(2) DEFAULT NULL COMMENT '지목코드',\
+  `jimok_name` varchar(20) DEFAULT NULL COMMENT '지목명',\
+  `area` decimal(28,9) DEFAULT NULL COMMENT '면적',\
+  `usage1_code` varchar(2) DEFAULT NULL COMMENT '용도지역코드1',\
+  `usage1_name` varchar(300) DEFAULT NULL COMMENT '용도지역명1',\
+  `usage2_code` varchar(2) DEFAULT NULL COMMENT '용도지역코드2',\
+  `usage2_name` varchar(300) DEFAULT NULL COMMENT '용도지역명2',\
+  `cur_use_code` varchar(3) DEFAULT NULL COMMENT '토지이용상황코드',\
+  `cur_use` varchar(300) DEFAULT NULL COMMENT '토지이용상황',\
+  `height_code` varchar(3) DEFAULT NULL COMMENT '지형높이코드',\
+  `height` varchar(300) DEFAULT NULL COMMENT '지형높이',\
+  `shape_code` varchar(2) DEFAULT NULL COMMENT '지형형상코드',\
+  `shape` varchar(300) DEFAULT NULL COMMENT '지형형상',\
+  `road_contact_code` varchar(2) DEFAULT NULL COMMENT '도로접면코드',\
+  `road_contact` varchar(300) DEFAULT NULL COMMENT '도로접면',\
+  `price` varchar(300) DEFAULT NULL COMMENT '공시지가',\
+  `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',\
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
+  `created_at` datetime DEFAULT current_timestamp(),\
+  PRIMARY KEY (`key`),\
+) ENGINE=InnoDB AUTO_INCREMENT=13764703 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;"
 
 
 CREATE_NEW_LAND_USAGE_INFO \
-    = "create table land_usage_info_new\
-(\
-    `key`          int auto_increment primary key,\
-    id             varchar(19)                          null comment '고유번호',\
-    leg_dong_code  varchar(10)                          null comment '법정동코드',\
-    leg_dong_name  varchar(300)                         null comment '법정동명',\
-    div_code       char                                 null comment '대장구분코드',\
-    div_name       varchar(300)                         null comment '대장구분명',\
-    jibun          varchar(9)                           null comment '지번',\
-    drawing_number varchar(33)                          null comment '도면번호',\
-    conflict_code  varchar(200)                         null comment '저촉여부코드',\
-    conflict       varchar(300)                         null comment '저촉여부',\
-    usage_code     varchar(300)                         null comment '용도지역지구코드목록',\
-    usage_name     varchar(300)                         null comment '용도지역지구명목록',\
-    register_date  varchar(10)                          null comment '등록일자',\
-    create_date    varchar(10)                          null comment '데이터기준일자',\
-    sigungu_code   varchar(5)                           null,\
-    etc            varchar(100)                         null,\
-    update_date    datetime                             null,\
-    insert_date    datetime default current_timestamp() null\
-);"
+    = "CREATE TABLE `land_usage_info_new` (`\
+  `key` int(11) NOT NULL AUTO_INCREMENT,\
+  `id` varchar(19) DEFAULT NULL COMMENT '고유번호',\
+  `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',\
+  `leg_dong_name` varchar(300) DEFAULT NULL COMMENT '법정동명',\
+  `div_code` char(1) DEFAULT NULL COMMENT '대장구분코드',\
+  `div_name` varchar(300) DEFAULT NULL COMMENT '대장구분명',\
+  `jibun` varchar(9) DEFAULT NULL COMMENT '지번',\
+  `drawing_number` varchar(33) DEFAULT NULL COMMENT '도면번호',\
+  `conflict_code` varchar(200) DEFAULT NULL COMMENT '저촉여부코드',\
+  `conflict` varchar(300) DEFAULT NULL COMMENT '저촉여부',\
+  `usage_code` varchar(300) DEFAULT NULL COMMENT '용도지역지구코드목록',\
+  `usage_name` varchar(300) DEFAULT NULL COMMENT '용도지역지구명목록',\
+  `register_date` varchar(10) DEFAULT NULL COMMENT '등록일자',\
+  `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',\
+  `sigungu_code` varchar(5) DEFAULT NULL,\
+  `etc` varchar(100) DEFAULT NULL,\
+  `update_date` datetime DEFAULT NULL,\
+  `insert_date` datetime DEFAULT current_timestamp(),\
+  PRIMARY KEY (`key`),\
+) ENGINE=InnoDB AUTO_INCREMENT=9440209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 
 
 CREATE_NEW_BUILDING_LEG_HEADLINE = "create table building_leg_headline_new\

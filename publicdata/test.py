@@ -3,7 +3,7 @@ import requests
 from utils.files import merge_split_zip_files
 
 
-# merge_split_zip_files("/data/sungkim/fs_building_data/publicdata/data/tmp_building_leg_headline", "/data/sungkim/fs_building_data/publicdata/data/tmp_building_leg_headline/output/")
+# merge_split_zip_files("/data/sungkim/fs_bds_data/publicdata/data/tmp_building_leg_headline", "/data/sungkim/fs_bds_data/publicdata/data/tmp_building_leg_headline/output/")
 # cookies = {
 #     'SCOUTER': 'z44lbdh4einsot',
 #     'JSESSIONID': 'Pj5ucfhukRTeMkiUoworR1Cu.CODROOTserver2',

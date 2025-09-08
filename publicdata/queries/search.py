@@ -1,7 +1,7 @@
 
 
 INSERT_SEARCH_INFO = \
-    "INSERT INTO fs_building.address_search_info_by_fs (id, leg_dong_code, sido_name, sigungu_name, leg_eupmyeondong_name, jibun_main_num, jibun_sub_num, update_date)\
+    "INSERT INTO fs_bds.address_search_info_by_fs (id, leg_dong_code, sido_name, sigungu_name, leg_eupmyeondong_name, jibun_main_num, jibun_sub_num, update_date)\
     SELECT\
     id,\
     leg_dong_code,\
@@ -11,7 +11,7 @@ INSERT_SEARCH_INFO = \
     IF(INSTR(jibun, '-') = 0, CAST(jibun AS UNSIGNED), CAST(SUBSTRING_INDEX(jibun, '-', 1) AS UNSIGNED)) AS jibun_main_num,\
     IF(INSTR(jibun, '-') = 0, 0, CAST(SUBSTRING_INDEX(jibun, '-', -1) AS UNSIGNED)) AS jibun_sub_num,\
     NOW()\
-    FROM fs_building.land_info LINFO\
+    FROM fs_bds.land_info LINFO\
     ON DUPLICATE KEY UPDATE\
      id = LINFO.id,\
      leg_dong_code = LINFO.leg_dong_code,\
@@ -23,7 +23,7 @@ INSERT_SEARCH_INFO = \
      update_date=NOW();"\
 
 UPDATE_SEARCH_INFO_QUERY = \
-    "UPDATE fs_building.address_search_info_by_fs FS\
+    "UPDATE fs_bds.address_search_info_by_fs FS\
     INNER JOIN building_addr BLDG\
     ON FS.sido_name = BLDG.sido_name\
     AND FS.sigungu_name = BLDG.sigungu_name\

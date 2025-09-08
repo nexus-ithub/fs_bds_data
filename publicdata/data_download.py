@@ -32,6 +32,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import Select
 
+import asyncio
 
 
 CUR_PATH = pathlib.Path(__file__).parent.resolve()
@@ -607,7 +608,7 @@ def downloadFile(type):
     return None, None
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--type",
@@ -639,7 +640,7 @@ def main():
         # bot.send_message(f"데이터 다운로드 시작 >  {get_dataname_by_type(type)}")
         prev_filesize = 0
         if not LOCAL_TEST:
-            cursor.execute("SELECT * FROM public_data_files WHERE type=%s and cancel_yn = 'N' order by create_date desc limit 2", (type,))
+            cursor.execute("SELECT * FROM public_data_files WHERE type=%s and cancel_yn = 'N' order by created_at desc limit 2", (type,))
             results = cursor.fetchall()
             logger.info(f"prev results: {results}")
             
@@ -667,23 +668,23 @@ def main():
 
                 # tmp 
                 if not LOCAL_TEST:
-                    bot.send_message(f"[{config_name}] 새로운 데이터 다운로드 완료 > {get_dataname_by_type(type)}, memo : {memo}")
+                    await bot.send_message(f"[{config_name}] 새로운 데이터 다운로드 완료 > {get_dataname_by_type(type)}, memo : {memo}")
 
             else:
-                # bot.send_message(f"데이터 다운로드 완료 > {get_dataname_by_type(type)}, 데이터 업데이트 필요없음")
+                # await bot.send_message(f"데이터 다운로드 완료 > {get_dataname_by_type(type)}, 데이터 업데이트 필요없음")
                 logger.info(f"same file size")
                 if os.path.exists(path):
                     os.remove(path)
         else:
             logger.info(f"failed to download {type}")
-            bot.send_message(f"[{config_name}] 데이터 다운로드 실패!! > {get_dataname_by_type(type)}")
+            await bot.send_message(f"[{config_name}] 데이터 다운로드 실패!! > {get_dataname_by_type(type)}")
 
         if not LOCAL_TEST:
             mysql_con.close()
 
     except Exception as e:
         if not LOCAL_TEST:
-            bot.send_message(f"[{config_name}] 데이터 다운로드 실패!! > {get_dataname_by_type(type)}, {e}")
+            await bot.send_message(f"[{config_name}] 데이터 다운로드 실패!! > {get_dataname_by_type(type)}, {e}")
 
         logger.error(f"ERROR {e}")
 
@@ -694,4 +695,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

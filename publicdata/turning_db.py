@@ -24,21 +24,21 @@ mysql_cursor = mysql_con.cursor(dictionary=True)
 
 # create unique index for land_info
 sql_list = [
-    # "create table fs_building.building_search_new (primary key (building_id)) "
+    # "create table fs_bds.building_search_new (primary key (building_id)) "
     # "AS SELECT building_id, site_loc, sigungu_code, bun, ji, leg_dong_code_val, use_approval_date, total_floor_area, land_area "
-    # "FROM fs_building.building_leg_headline",
-    # "CREATE INDEX `idx_sigungu_code` ON `fs_building`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_land_area` ON `fs_building`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_total_floor_area` ON `fs_building`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_use_approval_date` ON `fs_building`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_bun` ON `fs_building`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_ji` ON `fs_building`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE INDEX `idx_leg_dong_code_val` ON `fs_building`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE"
-    # "CREATE INDEX `idx_site_loc` ON `fs_building`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE"
+    # "FROM fs_bds.building_leg_headline",
+    # "CREATE INDEX `idx_sigungu_code` ON `fs_bds`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_land_area` ON `fs_bds`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_total_floor_area` ON `fs_bds`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_bun` ON `fs_bds`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_ji` ON `fs_bds`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE"
+    # "CREATE INDEX `idx_site_loc` ON `fs_bds`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE"
 
-# "CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_building`.`land_char_info` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT",
-    # "CREATE INDEX `idx_create_date` ON `fs_building`.`land_char_info` (create_date desc) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
-    # "CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_building`.`individual_announced_price` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT"
+# "CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_bds`.`land_char_info` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT",
+    # "CREATE INDEX `idx_create_date` ON `fs_bds`.`land_char_info` (create_date desc) COMMENT '' ALGORITHM DEFAULT LOCK NONE",
+    # "CREATE UNIQUE INDEX `idx_id_year_month`  ON `fs_bds`.`individual_announced_price` (id, year, month) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT"
 ]
 
 for sql in sql_list:

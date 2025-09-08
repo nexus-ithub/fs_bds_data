@@ -12,12 +12,13 @@ CREATE TABLE `public_data_files` (
   `update_count` int(11) DEFAULT NULL,
   `delete_yn` char(1) DEFAULT 'N',
   `cancel_yn` char(1) DEFAULT 'N',
-  `create_date` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_type` (`type`),
   KEY `idx_cancel_yn` (`cancel_yn`),
-  KEY `idx_create_date` (`create_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+  KEY `idx_create_date` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 CREATE TABLE `road_width` (
@@ -28,8 +29,8 @@ CREATE TABLE `road_width` (
   `road_scale` varchar(45) DEFAULT NULL,
   `road_width` varchar(45) DEFAULT NULL,
   `road_owner` varchar(45) DEFAULT NULL,
-  `update_date` datetime DEFAULT NULL,
-  `create_date` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_name` (`road_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;

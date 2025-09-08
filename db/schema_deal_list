@@ -21,14 +21,15 @@ CREATE TABLE `building_deal_list` (
   `broker_loc` varchar(45) DEFAULT NULL COMMENT '중개사 소재지',
   `cancel_reason_date` varchar(45) DEFAULT NULL COMMENT '해제사유발생일',
   `cancel_yn` varchar(45) DEFAULT NULL,
-  `create_date` datetime DEFAULT current_timestamp(),
   `position` geometry NOT NULL,
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`key`),
   UNIQUE KEY `idx_id_deal_date` (`id`,`deal_date`),
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`),
   SPATIAL KEY `idx_position` (`position`)
-) ENGINE=InnoDB AUTO_INCREMENT=54244 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54244 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
 
 CREATE TABLE `land_deal_list` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -49,8 +50,9 @@ CREATE TABLE `land_deal_list` (
   `broker_loc` varchar(45) DEFAULT NULL COMMENT '중개사 소재지',
   `cancel_reason_date` varchar(45) DEFAULT NULL COMMENT '해제사유발생일',
   `cancel_yn` varchar(45) DEFAULT NULL,
-  `create_date` datetime DEFAULT current_timestamp(),
   `position` geometry NOT NULL,
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),  
   PRIMARY KEY (`key`),
   UNIQUE KEY `idx_id_deal_date` (`id`,`deal_date`),
   KEY `idx_leg_dong_code` (`leg_dong_code`),
