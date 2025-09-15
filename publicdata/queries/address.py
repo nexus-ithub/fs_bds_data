@@ -23,7 +23,7 @@ def update_address_info_query(filename, data):
                 f"address_id = '{data[0]}', road_name_code = '{data[1]}', eupmyeondong_serial_num = '{data[2]}', is_underground = '{data[3]}', "
                 f"building_main_num = {data[4]}, building_sub_num = {data[5]}, basic_local_num = '{data[6]}', "
                 f"change_reason_code = '{data[7]}', noti_date = '{data[8]}', prev_road_addr = '{data[9]}', detail_address_avail = '{data[10]}', "
-                f"deleted_yn = '{get_deleted(data[7])}', update_date = now()"
+                f"deleted_yn = '{get_deleted(data[7])}'"
                 )
     elif unicodedata.normalize('NFC', "관련지번_변동분") in unicodedata.normalize('NFC', filename):
         return (f"INSERT INTO jibun_info ("
@@ -37,7 +37,7 @@ def update_address_info_query(filename, data):
                 f"address_id = '{data[0]}', serial_num = '{data[1]}', leg_dong_code = '{data[2]}',"
                 f"sido_name = '{data[3]}', sigungu_name = '{data[4]}', leg_eupmyeondong_name = '{data[5]}', leg_li_name = '{data[6]}',"
                 f"is_mountain = '{data[7]}', jibun_main_num = {data[8]}, jibun_sub_num = {data[9]}, is_main_jibun = '{data[10]}',"
-                f"deleted_yn = '{get_deleted(data[11])}', update_date = now()"
+                f"deleted_yn = '{get_deleted(data[11])}'"
                 )
     elif unicodedata.normalize('NFC', "지번_변동분") in unicodedata.normalize('NFC', filename):
         return (f"INSERT INTO jibun_info ("
@@ -50,7 +50,7 @@ def update_address_info_query(filename, data):
                 f"ON DUPLICATE KEY UPDATE "
                 f"address_id = '{data[0]}', serial_num = '{data[1]}', leg_dong_code = '{data[2]}',"
                 f"sido_name = '{data[3]}', sigungu_name = '{data[4]}', leg_eupmyeondong_name = '{data[5]}', leg_li_name = '{data[6]}',"
-                f"is_mountain = '{data[7]}', jibun_main_num = {data[8]}, jibun_sub_num = {data[9]}, is_main_jibun = '{data[10]}', update_date = now()"
+                f"is_mountain = '{data[7]}', jibun_main_num = {data[8]}, jibun_sub_num = {data[9]}, is_main_jibun = '{data[10]}'"
                 )
     elif unicodedata.normalize('NFC', "부가정보_변동분") in unicodedata.normalize('NFC', filename):
         return (f"INSERT INTO additional_info ("
@@ -63,7 +63,7 @@ def update_address_info_query(filename, data):
                 f"ON DUPLICATE KEY UPDATE "
                 f"address_id = '{data[0]}', admin_dong_code = '{data[1]}', admin_dong_name = '{data[2]}',"
                 f"zip_code = '{data[3]}', zip_serial_num = '{data[4]}', huge_delivery_name = '{data[5]}',"
-                f"building_leg_name = '{data[6]}', local_building_name = '{data[7]}', is_apartment_house ='{data[8]}', update_date = now()"
+                f"building_leg_name = '{data[6]}', local_building_name = '{data[7]}', is_apartment_house ='{data[8]}'"
                 )
     elif unicodedata.normalize('NFC', "도로명코드_변경분") in unicodedata.normalize('NFC', filename):
         return (f"INSERT INTO road_code_info ("
@@ -79,7 +79,7 @@ def update_address_info_query(filename, data):
                 f"road_name_code = '{data[0]}', road_name = '{data[1]}', road_name_roman = '{data[2]}', eupmyeondong_serial_num = '{data[3]}',"
                 f"sido_name = '{data[4]}', sido_name_roman = '{data[5]}', sigungu_name = '{data[6]}', sigungu_name_roman = '{data[7]}',"
                 f"eupmyeondong_name = '{data[8]}', eupmyeondong_name_roman = '{data[9]}', eupmyeondong_val = '{data[10]}', eupmyeondong_code = '{data[11]}',"
-                f"in_use = '{data[12]}', change_reason = '{data[13]}', chage_history ='{data[14]}', noti_date = '{data[15]}', cancel_date ='{data[16]}', update_date = now()"
+                f"in_use = '{data[12]}', change_reason = '{data[13]}', chage_history ='{data[14]}', noti_date = '{data[15]}', cancel_date ='{data[16]}'"
                 )
     elif "build_mod" in filename:
         return (f"INSERT INTO building_addr ("
@@ -108,5 +108,5 @@ def update_address_info_query(filename, data):
                 f"zip_serial_num = '{data[20]}', huge_delivery_name = '{data[21]}', move_reason_code ='{data[22]}', release_date = '{data[23]}',"
                 f"prev_road_addr = '{data[24]}', local_building_name = '{data[25]}', is_apartment_house ='{data[26]}', basic_local_num = '{data[27]}',"
                 f"detail_address_avail = '{data[28]}', note1 = '{data[29]}', note2 ='{data[30]}', "
-                f"deleted_yn = '{get_deleted(data[22])}', update_date = now()"
+                f"deleted_yn = '{get_deleted(data[22])}'"
                 )

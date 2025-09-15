@@ -18,7 +18,7 @@ CREATE TABLE `public_data_files` (
   KEY `idx_type` (`type`),
   KEY `idx_cancel_yn` (`cancel_yn`),
   KEY `idx_create_date` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+);
 
 
 CREATE TABLE `road_width` (
@@ -33,4 +33,4 @@ CREATE TABLE `road_width` (
   `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_name` (`road_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+);

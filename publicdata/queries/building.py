@@ -63,7 +63,7 @@ def update_building_leg_headline_query(data):
             f"energy_eff_grade = '{data[67]}', energy_reduct_ratio = {data[68]}, energy_epi_score = {data[69]}, "
             f"eco_arch_grade = '{data[70]}', eco_arch_score = '{data[71]}', intelligent_arch_grade = '{data[72]}', "
             f"intelligent_arch_score = '{data[73]}', is_eq_resist = '{data[75]}', eq_resist_ability = '{data[76]}', "
-            f"leg_dong_code_val = '{data[8]}{data[9]}', update_date = now()"
+            f"leg_dong_code_val = '{data[8]}{data[9]}'"
             )
 
 

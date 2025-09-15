@@ -1,6 +1,7 @@
 import json
 import shutil
 import zipfile
+import argparse
 
 import mysql.connector
 import os
@@ -46,11 +47,9 @@ mysql_cursor = mysql_con.cursor(dictionary=True)
 bot = TelegramBot(config["TG_TOKEN"], config["TG_CID"])
 
 
-
 def get_schema(cursor, type):
     cursor.execute(f'show columns FROM {type};')
     return cursor.fetchall()
-
 
 
 def updateDataToTable(cursor, path, type, known_length, header_key, delimeter=',', encoding='cp949', quoting=0):
@@ -101,7 +100,6 @@ def updateDataToTable(cursor, path, type, known_length, header_key, delimeter=',
 
         datalist.append(tuple(values))
 
-
         if DEBUG:
             logger.info(sql)
             break
@@ -111,7 +109,7 @@ def updateDataToTable(cursor, path, type, known_length, header_key, delimeter=',
                        f"({', '.join(fields)}) "
                        f"VALUES ({', '.join(formats)}) "
                        f"ON DUPLICATE KEY UPDATE "
-                       f"{', '.join(update_values)}, update_date = now();")
+                       f"{', '.join(update_values)};")
 
                 update_count += 1
 
@@ -137,7 +135,7 @@ def updateDataToTable(cursor, path, type, known_length, header_key, delimeter=',
     return update_count
 
 
-def insertDataToNewTable(cursor, path, type, known_length, header_key, delimiter = ",", encoding = 'cp949', quoting = 0):
+def insertDataToNewTable(cursor, path, type, known_length, header_key, delimiter=',', encoding='cp949', quoting=0):
     logger.info(f"insertDataToNewTable {type}")
     update_count = 0
     schema = get_schema(cursor, type)
@@ -183,8 +181,6 @@ def insertDataToNewTable(cursor, path, type, known_length, header_key, delimiter
             formats.append("%s")
 
         datalist.append(tuple(values))
-
-
 
         if DEBUG:
             logger.info(sql)
@@ -244,6 +240,7 @@ def change_as_new_table(cursor, table_name):
         f"RENAME TABLE {table_name} to {table_name}_old, {table_name}_new to {table_name}")
     logger.info(f"table {table_name} change end")
 
+
 def create_new_table(cursor, type):
     new_table_name = f"{type}_new"
 
@@ -262,7 +259,6 @@ def create_new_table(cursor, type):
         create_sql = CREATE_NEW_BUILDING_LEG_HEADLINE
     elif type == "building_floor_info":
         create_sql = CREATE_NEW_BUILDING_FLOOR_INFO
-
 
     if create_sql:
         logger.info("create new table start")
@@ -285,14 +281,12 @@ def update_address_data(cursor, path, type):
         for i, item in enumerate(data):
             data[i] = item.replace("'", "\\'")
 
-
         # print(f"data {data}")
         if ONLY_SEOUL_ADDRESS and not data[0].startswith('11'):
             # print(f"not seoul ", data)
             continue
 
         query = update_address_info_query(filename, data)
-
 
         if query:
             # print(f"query {query}")
@@ -301,8 +295,6 @@ def update_address_data(cursor, path, type):
 
     logger.info(f"update ended {update_count}")
     return update_count
-
-
 
 
 def update_land_char_data(cursor, path, type):
@@ -341,6 +333,7 @@ def update_land_char_data(cursor, path, type):
     logger.info(f"update land char info end")
     return update_count
 
+
 def update_land_usage_data(cursor, path, type):
     logger.info(f"updating land usage info data")
 
@@ -367,6 +360,7 @@ def update_land_usage_data(cursor, path, type):
 
     return update_count
 
+
 def update_building_leg_headline(cursor, path, type):
     logger.info(f"updating {type} data")
 
@@ -390,53 +384,52 @@ def update_building_leg_headline(cursor, path, type):
     cursor.execute(
         "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_leg_headline_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-
     # make building search table
-    drop_table_if_exist(cursor, "building_search_new")
+    # drop_table_if_exist(cursor, "building_search_new")
 
-    logger.info(f"create building_search_new...")
-    cursor.execute(
-        "create table fs_bds.building_search_new (primary key (building_id)) "
-        "AS SELECT building_id, site_loc, sigungu_code, bun, ji, leg_dong_code_val, use_approval_date, total_floor_area, land_area "
-        "FROM fs_bds.building_leg_headline")
+    # logger.info(f"create building_search_new...")
+    # cursor.execute(
+    #     "create table fs_bds.building_search_new (primary key (building_id)) "
+    #     "AS SELECT building_id, site_loc, sigungu_code, bun, ji, leg_dong_code_val, use_approval_date, total_floor_area, land_area "
+    #     "FROM fs_bds.building_leg_headline")
 
-    logger.info(f"create idx_site_loc...")
-    cursor.execute(
-        "CREATE INDEX `idx_site_loc` ON `fs_bds`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_site_loc...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_site_loc` ON `fs_bds`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-    logger.info(f"create idx_sigungu_code...")
-    cursor.execute(
-        "CREATE INDEX `idx_sigungu_code` ON `fs_bds`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_sigungu_code...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_sigungu_code` ON `fs_bds`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-    logger.info(f"create idx_land_area...")
-    cursor.execute(
-        "CREATE INDEX `idx_land_area` ON `fs_bds`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_land_area...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_land_area` ON `fs_bds`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-    logger.info(f"create idx_total_floor_area...")
-    cursor.execute(
-        "CREATE INDEX `idx_total_floor_area` ON `fs_bds`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_total_floor_area...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_total_floor_area` ON `fs_bds`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-    logger.info(f"create idx_use_approval_date...")
-    cursor.execute(
-        "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    logger.info(f"create idx_bun...")
-    cursor.execute(
-        "CREATE INDEX `idx_bun` ON `fs_bds`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    logger.info(f"create idx_ji...")
-    cursor.execute(
-        "CREATE INDEX `idx_ji` ON `fs_bds`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    logger.info(f"create idx_leg_dong_code...")
-    cursor.execute(
-        "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_use_approval_date...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_bun...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_bun` ON `fs_bds`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_ji...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_ji` ON `fs_bds`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+    # logger.info(f"create idx_leg_dong_code...")
+    # cursor.execute(
+    #     "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
 
-    change_as_new_table(cursor, "building_search")
+    # change_as_new_table(cursor, "building_search")
 
     change_as_new_table(cursor, "building_leg_headline")
-
 
     logger.info(f"update {type} end")
 
     return update_count
+
 
 def update_building_floor_info(cursor, path, type):
     logger.info(f"updating {type} data")
@@ -472,6 +465,7 @@ def update_building_floor_info(cursor, path, type):
 
     return update_count
 
+
 def update_individual_announce_price_data(cursor, path, type):
     logger.info(f"updating announced price data")
 
@@ -496,7 +490,6 @@ def update_individual_announce_price_data(cursor, path, type):
         update_count = updateDataToTable(cursor, path, type, 13, "고유번호")
 
     return update_count
-
 
 
 def update_address_polygon_data(cursor, path):
@@ -538,7 +531,7 @@ def update_address_polygon_data(cursor, path):
                f"st_geomfromtext(%s) "
                f") on duplicate key update "
                f"leg_dong_code = VALUES(leg_dong_code), leg_dong_name = VALUES(leg_dong_name), jibun = VALUES(jibun),"
-               f" lat=VALUES(lat), lng=VALUES(lng), polygon=VALUES(polygon), update_date=now();")
+               f" lat=VALUES(lat), lng=VALUES(lng), polygon=VALUES(polygon);")
         if DEBUG:
             logger.info(sql)
             break
@@ -593,7 +586,6 @@ def update_distinct_polygon_data(cursor, path):
     data['lng'] = data['center_point'].map(lambda x: x.xy[0][0])
     data['lat'] = data['center_point'].map(lambda x: x.xy[1][0])
 
-
     datalist = []
     sql = None
 
@@ -619,7 +611,7 @@ def update_distinct_polygon_data(cursor, path):
                f") on duplicate key update code_name=VALUES(code_name),div_code=VALUES(div_code),div_code_name=VALUES(div_code_name),"
                f"sigungu_code=VALUES(sigungu_code),sigungu_name=VALUES(sigungu_name),leg_dong_code=VALUES(leg_dong_code),leg_dong_name=VALUES(leg_dong_name),"
                f"area=VALUES(area),lat=VALUES(lat),lng=VALUES(lng),"
-               f"polygon=VALUES(polygon), update_date=now();")
+               f"polygon=VALUES(polygon);")
 
         if DEBUG:
             logger.info(sql)
@@ -652,17 +644,13 @@ def update_distinct_polygon_data(cursor, path):
                 logger.error(sql)
                 raise Exception(f'{e}')
 
-
     if sql and len(datalist) > 0:
         logger.info(f'write extra data len = {len(datalist)}')
         cursor.executemany(sql, datalist)
         logger.info(f'write extra data end')
 
-
     logger.info(f"update ended {update_count}")
     return update_count
-
-
 
 
 def update_data(cursor, path, type):
@@ -697,89 +685,100 @@ def update_data(cursor, path, type):
     elif type == 'leg_dong_codes':
         return updateDataToTable(cursor, path, type, 3, "법정동코드", delimeter="\t")
 
+
 def update_search_table(cursor):
     logger.info(f'INSERT_SEARCH_INFO ...')
     cursor.execute(INSERT_SEARCH_INFO)
     logger.info(f'UPDATE_SEARCH_INFO_QUERY ...')
     cursor.execute(UPDATE_SEARCH_INFO_QUERY)
 
-sql = "SELECT * FROM fs_bds.public_data_files WHERE cancel_yn = 'N' and update_status != 'Y' and update_status != 'R' order by create_date asc;"
-# sql = "SELECT * FROM fs_bds.public_data_files WHERE cancel_yn = 'N'"
 
-mysql_cursor.execute(sql)
-files = mysql_cursor.fetchall()
+async def process_single_file(file_path: str, file_type: str, file_id: str = None, memo: str = None):
+    """단일 파일을 처리하는 함수"""
+    update_failed = False
+    update_count = 0
+    tmp_dest = None
 
-logger.info(f"fetch.. files : {len(files)}")
+    try:
+        if file_id and not DEBUG:
+            sql_update = f"UPDATE fs_bds.public_data_files SET update_status = 'R', update_start_date = now() WHERE id = '{file_id}'"
+            logger.info(f'sql update {sql_update}')
+            mysql_cursor.execute(sql_update)
 
-need_search_db_update = False
+        if not DEBUG and memo:
+            await bot.send_message(f"[{config_name}] 데이터 업데이트 시작 > {get_dataname_by_type(file_type)}, memo : {memo}")
 
-async def main():
+        filename = os.path.basename(file_path)
+        if pathlib.Path(filename).suffix.lower() == '.zip':
+            tmp_dest = f'{CUR_PATH}/data/tmp_{datetime.datetime.today().strftime("%Y-%m-%d_%H_%M_%S")}'
+            logger.info(f"unzip file -> {filename} to {tmp_dest}")
+
+            with zipfile.ZipFile(file_path, 'r') as zf:
+                logger.info('open success')
+                zipinfo = zf.infolist()
+                logger.info(f'zipinfo {zipinfo}')
+                for info in zipinfo:
+                    info.filename = info.filename.encode('cp437', errors='replace').decode('euc-kr', errors='replace')
+                    logger.info(f"unzip ... {info.filename}")
+                    zf.extract(info, path=tmp_dest)
+
+                for info in zipinfo:
+                    update_count += update_data(mysql_cursor, f"{tmp_dest}/{info.filename}", file_type)
+
+                zf.close()
+        else:
+            logger.info(f"update data -> {file_path}")
+            update_count = update_data(mysql_cursor, file_path, file_type)
+
+    except Exception as e:
+        logger.error(f'update failed {e}')
+        if not DEBUG and memo:
+            await bot.send_message(f"[{config_name}] 데이터 업데이트 실패 > {get_dataname_by_type(file_type)}, memo : {memo}, error : {e}")
+        update_failed = True
+
+    finally:
+        logger.info(f'end {update_count}')
+        if not update_failed:
+            if not DEBUG and memo:
+                await bot.send_message(f"[{config_name}] 데이터 업데이트 완료!! > {get_dataname_by_type(file_type)}, memo : {memo}, update_count : {update_count}")
+
+        if file_id and not DEBUG:
+            sql_update = f"UPDATE fs_bds.public_data_files SET update_status = '{'F' if update_failed else 'Y'}', update_end_date = now(), update_count = {update_count} WHERE id = '{file_id}'"
+            logger.info(f'sql update {sql_update}')
+            mysql_cursor.execute(sql_update)
+
+        if tmp_dest is not None:
+            shutil.rmtree(tmp_dest)
+
+        # 수동 모드에서는 파일을 삭제하지 않음
+        if not update_failed and file_path is not None and file_id:
+            os.remove(file_path)
+
+    return update_count, update_failed
+
+
+async def main_db_mode():
+    """DB 기반 처리 모드"""
+    sql = "SELECT * FROM fs_bds.public_data_files WHERE cancel_yn = 'N' and update_status != 'Y' and update_status != 'R' order by created_at asc;"
+
+    mysql_cursor.execute(sql)
+    files = mysql_cursor.fetchall()
+
+    logger.info(f"fetch.. files : {len(files)}")
+
+    need_search_db_update = False
+
     for file in files:
-        update_failed = False
         file_id = file['id']
         file_type = file['type']
-        update_count = 0
-        tmp_dest = None
         file_path = file['path']
         memo = file['memo']
-        create_date = file['create_date']
 
-        try:
-            if not DEBUG:
-                sql_update = f"UPDATE fs_bds.public_data_files SET update_status = 'R', update_start_date = now() WHERE id = '{file_id}'"
-                logger.info(f'sql update {sql_update}')
-                mysql_cursor.execute(sql_update)
+        update_count, update_failed = await process_single_file(file_path, file_type, file_id, memo)
 
-            if not DEBUG:
-                await bot.send_message(f"[{config_name}] 데이터 업데이트 시작 > {get_dataname_by_type(file_type)}, memo : {memo}")
-
-            filename = os.path.basename(file_path)
-            if pathlib.Path(filename).suffix.lower() == '.zip':
-                tmp_dest = f'{CUR_PATH}/data/tmp_{datetime.datetime.today().strftime("%Y-%m-%d_%H_%M_%S")}'
-                logger.info(f"unzip file -> {filename} to {tmp_dest}")
-                # zipfile = zipfile.ZipFile(path)
-                with zipfile.ZipFile(file_path, 'r') as zf:
-                    logger.info('open success')
-                    zipinfo = zf.infolist()
-                    logger.info(f'zipinfo {zipinfo}')
-                    for info in zipinfo:
-                        info.filename = info.filename.encode('cp437', errors='replace').decode('euc-kr', errors='replace')
-                        logger.info(f"unzip ... {info.filename}")
-                        zf.extract(info, path=tmp_dest)
-
-                    for info in zipinfo:
-                        update_count += update_data(mysql_cursor, f"{tmp_dest}/{info.filename}", file_type)
-
-                    zf.close()
-
-            else:
-                logger.info(f"update data -> {file_path}")
-                update_count = update_data(mysql_cursor, file_path, file_type)
-
-        except Exception as e:
-            logger.error(f'update failed {e}')
-            if not DEBUG:
-                await bot.send_message(f"[{config_name}] 데이터 업데이트 실패 > {get_dataname_by_type(file_type)}, memo : {memo}, error : {e}")
-
-            update_failed = True
-        finally:
-            logger.info(f'end {update_count}')
-            if not update_failed:
-                if file_type == 'building_addr' or file_type == 'land_info':
-                    need_search_db_update = True
-                if not DEBUG:
-                    await bot.send_message(f"[{config_name}] 데이터 업데이트 완료!! > {get_dataname_by_type(file_type)}, memo : {memo}, update_count : {update_count}")
-
-            # mysql_con.commit()
-            if not DEBUG:
-                sql_update = f"UPDATE fs_bds.public_data_files SET update_status = '{'F' if update_failed else 'Y'}', update_end_date = now(), update_count = {update_count} WHERE id = '{file_id}'"
-                logger.info(f'sql update {sql_update}')
-                mysql_cursor.execute(sql_update)
-            if tmp_dest is not None:
-                shutil.rmtree(tmp_dest)
-            if not update_failed and file_path is not None:
-                os.remove(file_path)
-
+        if not update_failed:
+            if file_type == 'building_addr' or file_type == 'land_info':
+                need_search_db_update = True
 
     if need_search_db_update:
         try:
@@ -790,9 +789,56 @@ async def main():
             await bot.send_message(f"[{config_name}] 검색DB 업데이트 실패")
 
     mysql_con.commit()
-    mysql_con.close()
-    # mysql_con_ac.close()
 
+
+async def main_manual_mode(file_path: str, file_type: str):
+    """수동 파일 처리 모드"""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"파일을 찾을 수 없습니다: {file_path}")
+
+    logger.info(f"수동 모드: 파일 {file_path}, 타입 {file_type} 처리 시작")
+
+    update_count, update_failed = await process_single_file(file_path, file_type)
+
+    if update_failed:
+        logger.error(f"파일 처리 실패: {file_path}")
+        return False
+    else:
+        logger.info(f"파일 처리 완료: {file_path}, 업데이트 건수: {update_count}")
+
+        # 검색 DB 업데이트가 필요한 타입인지 확인
+        if file_type == 'building_addr' or file_type == 'land_info':
+            try:
+                logger.info("검색DB 업데이트 시작")
+                update_search_table(mysql_cursor)
+                logger.info("검색DB 업데이트 완료")
+            except Exception as e:
+                logger.error(f"검색DB 업데이트 실패: {e}")
+
+        mysql_con.commit()
+        return True
+
+
+async def main():
+    parser = argparse.ArgumentParser(description="공공데이터 업데이트 스크립트")
+    parser.add_argument("--file_path", help="처리할 파일 경로 (수동 모드)")
+    parser.add_argument("--type", help="데이터 타입 (land_info, land_char, building_addr, address 등)")
+    parser.add_argument("--mode", choices=["db", "manual"], default="db",
+                       help="실행 모드: db (DB 기반), manual (수동 파일 처리)")
+
+    args = parser.parse_args()
+
+    if args.mode == "manual":
+        if not args.file_path or not args.type:
+            parser.error("수동 모드에서는 --file-path와 --type이 필요합니다")
+
+        success = await main_manual_mode(args.file_path, args.type)
+        if not success:
+            exit(1)
+    else:
+        await main_db_mode()
+
+    mysql_con.close()
 
 
 if __name__ == '__main__':

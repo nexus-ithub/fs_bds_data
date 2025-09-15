@@ -201,7 +201,7 @@ def parse_building_addr_row_to_tuple(row: List[str]) -> Tuple:
               zip_serial_num, huge_delivery_name, move_reason_code, release_date, prev_road_addr,
               local_building_name, is_apartment_house, basic_local_num, detail_address_avail, note1, note2
     """
-    if len(row) != 30:
+    if len(row) != 31:
         raise ValueError(f"건물주소 데이터는 30개 컬럼이 필요합니다. 실제: {len(row)}개, 데이터: {row}")
 
     def to_int_or_none(v: str):
@@ -277,7 +277,6 @@ def parse_building_addr_row_to_tuple(row: List[str]) -> Tuple:
         detail_address_avail,
         note1,
         note2,
-        note3,
     )
 
 

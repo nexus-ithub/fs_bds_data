@@ -552,7 +552,7 @@ def main():
     try:
         # bot.send_message(f"데이터 다운로드 시작 >  {get_dataname_by_type(type)}")
 
-        cursor.execute("SELECT * FROM public_data_files WHERE type=%s and cancel_yn = 'N' order by create_date desc limit 2", (type,))
+        cursor.execute("SELECT * FROM public_data_files WHERE type=%s and cancel_yn = 'N' order by created_at desc limit 2", (type,))
         results = cursor.fetchall()
         logger.info(f"prev results: {results}")
         prev_filesize = 0

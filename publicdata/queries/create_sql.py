@@ -18,8 +18,8 @@ CREATE_NEW_INDIVIDUAL_ANNOUNCED_PRICE \
   `sigungu_code` varchar(5) DEFAULT NULL,\
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
   `created_at` datetime DEFAULT current_timestamp(),\
-  PRIMARY KEY (`key`),\
-) ENGINE=InnoDB AUTO_INCREMENT=37466942 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;"
+  PRIMARY KEY (`key`)\
+);"
 
 
 CREATE_NEW_LAND_CHAR_INFO \
@@ -53,8 +53,8 @@ CREATE_NEW_LAND_CHAR_INFO \
   `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',\
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
   `created_at` datetime DEFAULT current_timestamp(),\
-  PRIMARY KEY (`key`),\
-) ENGINE=InnoDB AUTO_INCREMENT=13764703 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;"
+  PRIMARY KEY (`key`)\
+);"
 
 
 CREATE_NEW_LAND_USAGE_INFO \
@@ -75,10 +75,10 @@ CREATE_NEW_LAND_USAGE_INFO \
   `create_date` varchar(10) DEFAULT NULL COMMENT '데이터기준일자',\
   `sigungu_code` varchar(5) DEFAULT NULL,\
   `etc` varchar(100) DEFAULT NULL,\
-  `update_date` datetime DEFAULT NULL,\
-  `insert_date` datetime DEFAULT current_timestamp(),\
-  PRIMARY KEY (`key`),\
-) ENGINE=InnoDB AUTO_INCREMENT=9440209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
+  `created_at` datetime DEFAULT current_timestamp(),\
+  PRIMARY KEY (`key`)\
+);"
 
 
 CREATE_NEW_BUILDING_LEG_HEADLINE = "create table building_leg_headline_new\
@@ -162,8 +162,8 @@ CREATE_NEW_BUILDING_LEG_HEADLINE = "create table building_leg_headline_new\
     is_eq_resist                varchar(1)                             null comment '내진_설계_적용_여부',\
     eq_resist_ability           varchar(200)                           null comment '내진_능력',\
     leg_dong_code_val           varchar(10)                            null comment 'concat(sigungu_code + leg_dong_code)',\
-    update_date                 datetime                               null,\
-    insert_date                 datetime   default current_timestamp() null\
+    updated_at                  datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
+    created_at                  datetime DEFAULT current_timestamp(),\
 );"
 
 
@@ -205,6 +205,6 @@ CREATE_NEW_BUILDING_FLOOR_INFO = "create table building_floor_info_new\
     is_except_area         varchar(1)                             null comment '면적_제외_여부',\
     create_date            varchar(8)                             null comment '생성_일자',\
     leg_dong_code_val      varchar(10)                            null,\
-    update_date            datetime                               null,\
-    insert_date            datetime   default current_timestamp() null\
+    updated_at             datetime DEFAULT                       current_timestamp() ON UPDATE current_timestamp(),\
+    created_at             datetime DEFAULT                       current_timestamp(),\
 );"
