@@ -1,0 +1,6 @@
+0 23 * * * root bash /data/fs_bds_ai/fs_bds_data/scripts/building_deal.sh
+0 22 * * * root bash /data/fs_bds_ai/fs_bds_data/scripts/land_deal.sh
+0 20 * * 1,3 root bash /data/fs_bds_ai/fs_bds_data/scripts/download_landaddr_files.sh
+0 20 * * 2,4 root bash /data/fs_bds_ai/fs_bds_data/scripts/download_distinct_files.sh
+0 20 * * 5,6 root bash /data/fs_bds_ai/fs_bds_data/scripts/download_building_files.sh
+0 0 * * * root bash /data/fs_bds_ai/fs_bds_data/scripts/update_data.sh

@@ -83,7 +83,7 @@ CREATE TABLE `building_leg_headline` (
   KEY `idx_bun` (`bun`),
   KEY `idx_ji` (`ji`),
   KEY `idx_leg_dong_code_val` (`leg_dong_code_val`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `building_floor_info` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -128,4 +128,45 @@ CREATE TABLE `building_floor_info` (
   KEY `idx_bun` (`bun`),
   KEY `idx_ji` (`ji`),
   KEY `idx_leg_dong_code_val` (`leg_dong_code_val`)
-) ENGINE=InnoDB AUTO_INCREMENT=21089829 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
+
+
+CREATE TABLE `building_sub_addr` (
+  `key` int(11) NOT NULL AUTO_INCREMENT,
+  `building_id` varchar(33) NOT NULL COMMENT '관리_건축물대장_PK',
+  `leg_div_code` varchar(1) DEFAULT NULL COMMENT '대장_구분_코드',
+  `leg_div_code_name` varchar(100) DEFAULT NULL COMMENT '대장_구분_코드_명',
+  `leg_type_code` varchar(1) DEFAULT NULL COMMENT '대장_종류_코드',
+  `leg_type_code_name` varchar(100) DEFAULT NULL COMMENT '대장_종류_코드_명',
+  `site_loc` varchar(500) DEFAULT NULL COMMENT '대지_위치',
+  `road_name_site_loc` varchar(400) DEFAULT NULL COMMENT '도로명_대지_위치',
+  `building_name` varchar(100) DEFAULT NULL COMMENT '건물_명',
+  `sigungu_code` varchar(5) DEFAULT NULL COMMENT '시군구_코드',
+  `leg_dong_code` varchar(5) DEFAULT NULL COMMENT '법정동_코드',
+  `site_div_code` varchar(1) DEFAULT NULL COMMENT '대지_구분_코드',
+  `bun` varchar(4) DEFAULT NULL COMMENT '번',
+  `ji` varchar(4) DEFAULT NULL COMMENT '지',
+  `specialji_name` varchar(200) DEFAULT NULL COMMENT '특수지_명',
+  `block` varchar(20) DEFAULT NULL COMMENT '블록',
+  `lot` varchar(20) DEFAULT NULL COMMENT '로트',
+  `new_road_code` varchar(12) DEFAULT NULL COMMENT '새주소_도로_코드',
+  `new_leg_dong_code` varchar(5) DEFAULT NULL COMMENT '새주소_법정동_코드',
+  `is_underground` varchar(1) DEFAULT NULL COMMENT '새주소_지상지하_코드',
+  `new_building_main_num` decimal(5,0) DEFAULT NULL COMMENT '새주소_본_번',
+  `new_building_sub_num` decimal(5,0) DEFAULT 0 COMMENT '새주소_부_번',
+  `sub_leg_div_code` varchar(1) DEFAULT NULL COMMENT '부속_대장_구분_코드',
+  `sub_leg_div_code_name` varchar(100) DEFAULT NULL COMMENT '부속_대장_구분_코드_명',
+  `sub_sigungu_code` varchar(5) DEFAULT NULL COMMENT '부속_시군구_코드',
+  `sub_leg_dong_code` varchar(5) DEFAULT NULL COMMENT '부속_법정동_코드',
+  `sub_site_div_code` varchar(1) DEFAULT NULL COMMENT '부속_대지_구분_코드',
+  `sub_bun` varchar(4) DEFAULT NULL COMMENT '부속_번',
+  `sub_ji` varchar(4) DEFAULT NULL COMMENT '부속_지',
+  `sub_specialji_name` varchar(200) DEFAULT NULL COMMENT '부속_특수지_명',
+  `sub_block` varchar(20) DEFAULT NULL COMMENT '부속_블록',
+  `sub_lot` varchar(20) DEFAULT NULL COMMENT '부속_로트',
+  `sub_etc_jibun_name` varchar(300) DEFAULT NULL COMMENT '부속_기타_지번_명',
+  `create_date` varchar(8) DEFAULT NULL COMMENT '생성_일자',
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`key`)
+);

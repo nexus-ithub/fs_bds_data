@@ -31,6 +31,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import ElementClickInterceptedException
 
 import asyncio
 
@@ -80,7 +81,7 @@ def unzip_file(file_path, dest):
                 zf.extract(info, path=dest)
 
             zf.close()
-
+    
         return True
     except Exception as e:
         logger.info('unzip error : {}'.format(e))
@@ -203,7 +204,17 @@ def download_building_data(type):
     deleteFileIfExist(DOWNLOAD_PATH)
     os.makedirs(DOWNLOAD_PATH, exist_ok=True)
 
-    find_title = "표제부" if type == "building_leg_headline" else "층별개요"
+    # find_title = "표제부" if type == "building_leg_headline" else "층별개요"
+    
+    if type == "building_sub_addr":
+        find_title = "부속지번"
+    elif type == "building_floor_info":
+        find_title = "층별개요"
+    elif type == "building_leg_headline":
+        find_title = "표제부"
+    else:
+        logger.warning(f"Unknown type: {type}, using default find_title")
+        raise ValueError(f"Unknown type: {type}")
 
 
     logger.info(f"download_building_data {type} {find_title}")
@@ -243,8 +254,10 @@ def download_building_data(type):
 
     try:
         url = "https://www.hub.go.kr/portal/opn/lps/idx-lgcpt-pvsn-srvc-list.do"
-        print(url)
+        logger.info(f"Opening URL: {url}")
         driver.get(url)
+
+        logger.info("Page loaded successfully")
 
         time.sleep(5)
 
@@ -252,10 +265,12 @@ def download_building_data(type):
 
         
 
+        logger.info("Waiting for opnLgcptTaskSeCd select element...")
         # 페이지 로드 후, 옵션 셀렉트 박스 요소를 찾기
         select_element = wait.until(
             EC.presence_of_element_located((By.ID, "opnLgcptTaskSeCd"))
         )
+        logger.info("opnLgcptTaskSeCd select element found")
 
         # Select 객체 생성
         select = Select(select_element)
@@ -299,24 +314,50 @@ def download_building_data(type):
 
 
         # 최신 항목(건축물대장 + 표제부/층별개요) li
+        # latest_item = wait.until(
+        #     EC.visibility_of_element_located((
+        #         By.XPATH,
+        #         f"(//li[.//p[@class='tagset achieve' and normalize-space()='건축물대장']"
+        #         f" and .//p[@class='tit'][contains(normalize-space(), '{find_title}')]])[1]"
+        #     ))
+        # )
         latest_item = wait.until(
             EC.visibility_of_element_located((
                 By.XPATH,
-                f"(//li[.//p[@class='tagset achieve' and normalize-space()='건축물대장']"
-                f" and .//p[@class='tit'][contains(normalize-space(), '{find_title}')]])[1]"
+                f"""(//li[
+                    .//p[@class='tagset achieve' and normalize-space()='건축물대장']
+                    and .//p[@class='tit'][starts-with(normalize-space(), concat('{find_title}', ' '))]
+                ])[1]"""
             ))
-        )
+        )        
 
         # 데이터제공년월 추출
         date_text = latest_item.find_element(By.XPATH, ".//span[@class='detail']").text.strip()
         logger.info(f"데이터제공년월: {date_text}")
 
-        # 전체 다운로드 버튼 클릭
+        # 전체 다운로드 버튼 클릭 (클릭 인터셉트 방어 포함)
         latest_download_button = latest_item.find_element(By.XPATH, ".//button[contains(., '전체')]")
-        # driver.execute_script("arguments[0].click();", latest_download_button)
-        # logger.info(f"최신 {find_title} 다운로드 버튼 클릭 완료")
-        latest_download_button.click()
+        logger.info(f"다운로드 버튼 찾음: {latest_download_button}")
 
+        # 버튼이 클릭 가능한 상태가 될 때까지 한 번 더 대기
+        wait.until(EC.element_to_be_clickable((By.XPATH, ".//button[contains(., '전체')]")))
+
+        # 화면에 확실히 보이도록 스크롤
+        try:
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", latest_download_button)
+            time.sleep(1)
+        except Exception as e:
+            logger.info(f"scrollIntoView 실패 (무시): {e}")
+
+        logger.info(f"최신 {find_title} 다운로드 버튼 클릭 시도")
+
+        try:
+            latest_download_button.click()
+        except ElementClickInterceptedException as e:
+            logger.info(f"ElementClickInterceptedException 발생, JS 클릭으로 재시도: {e}")
+            driver.execute_script("arguments[0].click();", latest_download_button)
+
+        logger.info(f"클릭 후 대기 중...")
         time.sleep(5)
         # --- 모달: 확인 버튼 클릭 ---
         confirm_button = wait.until(
@@ -384,14 +425,30 @@ def download_land_data(type):
 
     logger.info(f"download_land_data {type} {data_name}")
 
+    # # ChromeOptions를 생성하여 다운로드 옵션을 설정
+    # options = Options()
+    # # 다운로드 경로 설정
+    # options.add_argument(f"download.default_directory={DOWNLOAD_PATH}")
+    # options.add_argument(f"savefile.default_directory={DOWNLOAD_PATH}")
+    # prefs = {
+    #     "download.default_directory": DOWNLOAD_PATH,
+    #     "savefile.default_directory": DOWNLOAD_PATH
+    # }
+    # options.add_experimental_option('prefs', prefs)
+
     # ChromeOptions를 생성하여 다운로드 옵션을 설정
     options = Options()
-    # 다운로드 경로 설정
-    options.add_argument(f"download.default_directory={DOWNLOAD_PATH}")
-    options.add_argument(f"savefile.default_directory={DOWNLOAD_PATH}")
+
+    # ⚠️ 충돌을 유발하는 '--user-data-dir' 관련 인수를 명시적으로 추가하지 않음 ⚠️
+
+    # 다운로드 경로 설정 (이 설정은 ChromePrefs를 통해 올바르게 적용됩니다)
     prefs = {
         "download.default_directory": DOWNLOAD_PATH,
-        "savefile.default_directory": DOWNLOAD_PATH
+        "savefile.default_directory": DOWNLOAD_PATH,
+        "download.prompt_for_download": False, # 다운로드 프롬프트 표시 안 함
+        "download.directory_upgrade": True,     # 다운로드 경로 자동 업그레이드
+        "safebrowsing.enabled": False,          # 안전한 다운로드 사용 안 함
+        "profile.default_content_setting_values.automatic_downloads": 1 
     }
     options.add_experimental_option('prefs', prefs)
 
@@ -593,7 +650,7 @@ def download_leg_dong_codes():
 def downloadFile(type):
     if type == 'address' or type == 'building_addr':
         return download_address(type)
-    elif type == 'building_leg_headline' or type == 'building_floor_info':
+    elif type == 'building_leg_headline' or type == 'building_floor_info' or type == 'building_sub_addr':
         return download_building_data(type)
     elif type == 'district_polygon' or type == 'district_foot_traffic' or\
         type == 'district_office_workers' or type == 'district_resident' or type == 'district_resident_alltime' or\

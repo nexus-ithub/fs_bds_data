@@ -30,7 +30,7 @@ CREATE TABLE `commercial_district_seoul` (
   PRIMARY KEY (`key`),
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `district_foot_traffic` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -67,7 +67,7 @@ CREATE TABLE `district_foot_traffic` (
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`),
   KEY `idx_quarter` (`quarter`)
-) ENGINE=InnoDB AUTO_INCREMENT=223325 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci
+);
 
 CREATE TABLE `district_foot_traffic_seoul` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -101,7 +101,7 @@ CREATE TABLE `district_foot_traffic_seoul` (
   PRIMARY KEY (`key`),
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `district_office_workers` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -137,7 +137,7 @@ CREATE TABLE `district_office_workers` (
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`),
   KEY `idx_quarter` (`quarter`)
-) ENGINE=InnoDB AUTO_INCREMENT=155320 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `district_polygon` (
   `code` varchar(7) NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE `district_polygon` (
   `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`code`),
   SPATIAL KEY `idx_polygon` (`polygon`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `district_resident` (
@@ -196,7 +196,7 @@ CREATE TABLE `district_resident` (
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`),
   KEY `idx_quarter` (`quarter`)
-) ENGINE=InnoDB AUTO_INCREMENT=149322 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `district_resident_alltime` (
@@ -236,4 +236,4 @@ CREATE TABLE `district_resident_alltime` (
   UNIQUE KEY `idx_date_code` (`quarter`,`code`),
   KEY `idx_code` (`code`),
   KEY `idx_quarter` (`quarter`)
-) ENGINE=InnoDB AUTO_INCREMENT=93033 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);

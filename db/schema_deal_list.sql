@@ -29,7 +29,8 @@ CREATE TABLE `building_deal_list` (
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`),
   SPATIAL KEY `idx_position` (`position`)
-) ENGINE=InnoDB AUTO_INCREMENT=54244 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
+
 
 CREATE TABLE `land_deal_list` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -58,4 +59,4 @@ CREATE TABLE `land_deal_list` (
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`),
   SPATIAL KEY `idx_position` (`position`)
-) ENGINE=InnoDB AUTO_INCREMENT=59654 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);

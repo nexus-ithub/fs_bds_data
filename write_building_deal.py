@@ -98,8 +98,10 @@ columns = [
     'buyerGbn',         # 매수자(거래주체정보)
 ]
 
-end_month = '200601'
+end_month = '202001'
 
+RETRY_DURATION = 60 * 60 * 3 # 3 hours
+MAX_RETRY = 16
 
 fail_count = 0
 total_count = 0
@@ -107,26 +109,27 @@ useKeyIndex = 0
 insert_count = 0
 request_count = 0
 
-def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
-    global useKeyIndex
+def collect(logger, mysql_con, mysql_cursor, region_code, date, public_key):
+    # global useKeyIndex
     global total_count
     global fail_count
     global insert_count
     global request_count
 
-    logger.info(f"public_keys {public_keys}")
+    logger.info(f"public_key {public_key}")
     logger.info(f"###############################################")
     logger.info(f"#################START {region_code} {date} #################")
 
-    for i in range(len(public_keys)):
+    retry_count = 0
+    while True:
         try:
             df = pd.DataFrame(columns=columns)
             # print(public_keys[i])
-            params = {'serviceKey': public_keys[i],
-                      'LAWD_CD': region_code,
-                      'DEAL_YMD': date,
-                      'numOfRows': 99999
-                      }
+            params = {'serviceKey': public_key,
+                        'LAWD_CD': region_code,
+                        'DEAL_YMD': date,
+                        'numOfRows': 99999
+                        }
             request_count += 1
             logger.info(f"request_count {request_count}")
             response = session.get(url, params=params, timeout=10)
@@ -207,12 +210,12 @@ def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
 
                 if building_ar and plottage_ar:
                     sql = (f"SELECT land_char.id as id, land_char.leg_dong_name, leg_dong_code_val as leg_dong_code, IF(ji='0000', TRIM(LEADING '0' FROM bun), "
-                           f"CONCAT(TRIM(LEADING '0' FROM bun), '-', TRIM(LEADING '0' FROM ji))) as jibun, land_char.usage1_name as usage_name, "
-                           f"polygon.lat, polygon.lng "
-                           f"FROM building_leg_headline as building "
-                           f"left join land_char_info as land_char on land_char.leg_dong_code = leg_dong_code_val and jibun = IF(ji='0000', TRIM(LEADING '0' FROM bun), CONCAT(TRIM(LEADING '0' FROM bun), '-', TRIM(LEADING '0' FROM ji))) "
-                           f"left join address_polygon as polygon on polygon.leg_dong_code = land_char.leg_dong_code and polygon.jibun = land_char.jibun "
-                           f"where sigungu_code = '{region_code}' and site_loc like '%{leg_dong_name}%' and use_approval_date like '{build_year}%' and total_floor_area = {building_ar} and land_area = {plottage_ar} group by building_id")
+                            f"CONCAT(TRIM(LEADING '0' FROM bun), '-', TRIM(LEADING '0' FROM ji))) as jibun, land_char.usage1_name as usage_name, "
+                            f"polygon.lat, polygon.lng "
+                            f"FROM building_leg_headline as building "
+                            f"left join land_char_info as land_char on land_char.leg_dong_code = leg_dong_code_val and jibun = IF(ji='0000', TRIM(LEADING '0' FROM bun), CONCAT(TRIM(LEADING '0' FROM bun), '-', TRIM(LEADING '0' FROM ji))) "
+                            f"left join address_polygon as polygon on polygon.leg_dong_code = land_char.leg_dong_code and polygon.jibun = land_char.jibun "
+                            f"where sigungu_code = '{region_code}' and site_loc like '%{leg_dong_name}%' and use_approval_date like '{build_year}%' and total_floor_area = {building_ar} and land_area = {plottage_ar} group by building_id")
                     logger.info(sql)
                     mysql_cursor.execute(sql)
 
@@ -221,23 +224,23 @@ def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
 
                     if result and len(result) == 1 and result[0]['lat'] and result[0]['lng']:
                         sql = (f"INSERT INTO building_deal_list ( "
-                               f"id, region_code, sigungu_name, "
-                               f"leg_dong_name, leg_dong_code, jibun, jibun_hint, usage_name, "
-                               f"building_main_usage_name, arch_year, "            
-                               f"floor, land_area, building_area, "
-                               f"price, div_name, leg_div_code_name, deal_date, "
-                               f"deal_type, broker_loc, "
-                               f"cancel_reason_date, cancel_yn, position) "
-                               f"VALUES ( "
-                               f"{strNullProc(result[0]['id'])}, {strNullProc(region_code)}, {strNullProc(sigungu_name)}, "
-                               f"{strNullProc(result[0]['leg_dong_name'])}, {strNullProc(result[0]['leg_dong_code'])}, {strNullProc(result[0]['jibun'])}, {strNullProc(jibun)}, {strNullProc(result[0]['usage_name'])}, "
-                               f"{strNullProc(building_use)}, {strNullProc(build_year)}, "
-                               f"{strNullProc(floor)}, {strNullProc(plottage_ar)}, {strNullProc(building_ar)}, "
-                               f"{strNullProc(deal_amount)}, {strNullProc(share_dealing_type)}, {strNullProc(building_type)}, '{deal_date}', "
-                               f"{strNullProc(dealing_gbn)}, {strNullProc(estate_agent_sgg_nm)}, "
-                               f"{strNullProc(cdeal_day)}, {strNullProc(cdealtype)}, GEOMFROMTEXT('POINT({result[0]['lng']} {result[0]['lat']})')) "
-                               f"on duplicate key update "
-                               f"price={strNullProc(deal_amount)};")
+                                f"id, region_code, sigungu_name, "
+                                f"leg_dong_name, leg_dong_code, jibun, jibun_hint, usage_name, "
+                                f"building_main_usage_name, arch_year, "            
+                                f"floor, land_area, building_area, "
+                                f"price, div_name, leg_div_code_name, deal_date, "
+                                f"deal_type, broker_loc, "
+                                f"cancel_reason_date, cancel_yn, position) "
+                                f"VALUES ( "
+                                f"{strNullProc(result[0]['id'])}, {strNullProc(region_code)}, {strNullProc(sigungu_name)}, "
+                                f"{strNullProc(result[0]['leg_dong_name'])}, {strNullProc(result[0]['leg_dong_code'])}, {strNullProc(result[0]['jibun'])}, {strNullProc(jibun)}, {strNullProc(result[0]['usage_name'])}, "
+                                f"{strNullProc(building_use)}, {strNullProc(build_year)}, "
+                                f"{strNullProc(floor)}, {strNullProc(plottage_ar)}, {strNullProc(building_ar)}, "
+                                f"{strNullProc(deal_amount)}, {strNullProc(share_dealing_type)}, {strNullProc(building_type)}, '{deal_date}', "
+                                f"{strNullProc(dealing_gbn)}, {strNullProc(estate_agent_sgg_nm)}, "
+                                f"{strNullProc(cdeal_day)}, {strNullProc(cdealtype)}, GEOMFROMTEXT('POINT({result[0]['lng']} {result[0]['lat']})')) "
+                                f"on duplicate key update "
+                                f"price={strNullProc(deal_amount)};")
 
                         logger.info(sql)
                         mysql_cursor.execute(sql)
@@ -285,22 +288,22 @@ def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
                                 #        f"{strNullProc(col['거래유형'])}, {strNullProc(col['중개사소재지'])}, "
                                 #        f"{strNullProc(col['해제사유발생일'])}, {strNullProc(col['해제여부'])}, GEOMFROMTEXT('{result[0]['polygon']}')) on duplicate key update price={strNullProc(col['거래금액'])};")
                                 sql = (f"INSERT INTO building_deal_list ( "
-                                       f"id, region_code, sigungu_name, "
-                                       f"leg_dong_name, leg_dong_code, jibun, jibun_hint, usage_name, "
-                                       f"building_main_usage_name, arch_year, "
-                                       f"floor, land_area, building_area, "
-                                       f"price, div_name, leg_div_code_name, deal_date, "
-                                       f"deal_type, broker_loc, "
-                                       f"cancel_reason_date, cancel_yn, position) "
-                                       f"VALUES ( "
-                                       f"{strNullProc(result[0]['id'])}, {strNullProc(region_code)}, {strNullProc(sigungu_name)}, "
-                                       f"{strNullProc(result[0]['leg_dong_name'])}, {strNullProc(result[0]['leg_dong_code'])}, {strNullProc(result[0]['jibun'])}, {strNullProc(jibun)}, {strNullProc(result[0]['usage1_name'])}, "
-                                       f"{strNullProc(building_use)}, {strNullProc(build_year)}, "
-                                       f"{strNullProc(floor)}, {strNullProc(plottage_ar)}, {strNullProc(building_ar)}, "
-                                       f"{strNullProc(deal_amount)}, {strNullProc(share_dealing_type)}, {strNullProc(building_type)}, '{deal_date}', "
-                                       f"{strNullProc(dealing_gbn)}, {strNullProc(estate_agent_sgg_nm)}, "
-                                       f"{strNullProc(cdeal_day)}, {strNullProc(cdealtype)}, GEOMFROMTEXT('POINT({result[0]['lng']} {result[0]['lat']})')) "
-                                       f"on duplicate key update price={strNullProc(deal_amount)};")
+                                        f"id, region_code, sigungu_name, "
+                                        f"leg_dong_name, leg_dong_code, jibun, jibun_hint, usage_name, "
+                                        f"building_main_usage_name, arch_year, "
+                                        f"floor, land_area, building_area, "
+                                        f"price, div_name, leg_div_code_name, deal_date, "
+                                        f"deal_type, broker_loc, "
+                                        f"cancel_reason_date, cancel_yn, position) "
+                                        f"VALUES ( "
+                                        f"{strNullProc(result[0]['id'])}, {strNullProc(region_code)}, {strNullProc(sigungu_name)}, "
+                                        f"{strNullProc(result[0]['leg_dong_name'])}, {strNullProc(result[0]['leg_dong_code'])}, {strNullProc(result[0]['jibun'])}, {strNullProc(jibun)}, {strNullProc(result[0]['usage1_name'])}, "
+                                        f"{strNullProc(building_use)}, {strNullProc(build_year)}, "
+                                        f"{strNullProc(floor)}, {strNullProc(plottage_ar)}, {strNullProc(building_ar)}, "
+                                        f"{strNullProc(deal_amount)}, {strNullProc(share_dealing_type)}, {strNullProc(building_type)}, '{deal_date}', "
+                                        f"{strNullProc(dealing_gbn)}, {strNullProc(estate_agent_sgg_nm)}, "
+                                        f"{strNullProc(cdeal_day)}, {strNullProc(cdealtype)}, GEOMFROMTEXT('POINT({result[0]['lng']} {result[0]['lat']})')) "
+                                        f"on duplicate key update price={strNullProc(deal_amount)};")
 
                                 logger.info(sql)
                                 mysql_cursor.execute(sql)
@@ -320,12 +323,14 @@ def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
                     fail_count += 1
             return True
         except Exception as e:
-            useKeyIndex += 1
-            if useKeyIndex >= len(public_keys):
-                useKeyIndex = 0
-            logger.error(f"error {e} {useKeyIndex}")
-
-        time.sleep(0.5)
+            logger.error(f"error {e}")
+            retry_count += 1
+            if retry_count > MAX_RETRY:
+                logger.error(f"retry count exceeded {MAX_RETRY}")
+                break
+            logger.error(f"retry after {RETRY_DURATION} seconds ....")
+            time.sleep(RETRY_DURATION)
+            
 
     logger.error("collect failed!")
 
@@ -354,6 +359,10 @@ def main(args):
     # TEST CODE
     # collect(logger, mysql_con, mysql_cursor, '11680', '202311')
     # return
+    start_code = args.start_code
+    started = True
+    if start_code:
+        started = False
 
     for code in codes:
         # if code[0] == '법정동코드' or code[1] == '서울특별시':
@@ -373,7 +382,14 @@ def main(args):
 
         region_code = code["leg_dong_code"][0:5]
         # logger.info(region_code)
-
+        logger.info(region_code)
+        if not started:
+            if region_code != start_code:
+                logger.info (f"skip {code} until... {start_code}")
+                continue
+            started = True
+            logger.info (f"start {code}")
+            
         if region_code == prev_code:
           logger.info("same code")
           continue
@@ -394,7 +410,6 @@ def main(args):
         if not result:
             logger.info(f"failed")
             break
-
 
 
     mysql_cursor.close()
@@ -426,6 +441,14 @@ if __name__ == '__main__':
         type=str,
         help="db config file path",
     )
+
+    parser.add_argument(
+        "--start_code",
+        type=str,
+        default=None,
+        help="start region code",
+    )
+
     # parser.add_argument(
     #     "--codes",
     #     type=str,

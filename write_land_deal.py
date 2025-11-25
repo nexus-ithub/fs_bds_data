@@ -91,7 +91,9 @@ columns = [
     'estateAgentSggNm' # 중개사소재지(시군구단위)
 ]
 
-end_month = '200601'
+end_month = '202001'
+RETRY_DURATION = 60 * 60 * 3 # 3 hours
+MAX_RETRY = 16
 
 
 fail_count = 0
@@ -100,23 +102,25 @@ useKeyIndex = 0
 insert_count = 0
 request_count = 0
 
-def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
-    global useKeyIndex
+def collect(logger, mysql_con, mysql_cursor, region_code, date, public_key):
+    # global useKeyIndex
     global total_count
     global fail_count
     global insert_count
     global request_count
 
 
-    logger.info(f"public_keys {public_keys}")
+    logger.info(f"public_key {public_key}")
     logger.info(f"###############################################")
     logger.info(f"#################START {region_code} {date} #################")
-
-    for i in range(len(public_keys)):
+    
+    retry_count = 0
+    
+    while True:
         try:
             df = pd.DataFrame(columns=columns)
 
-            params = {'serviceKey': public_keys[i],
+            params = {'serviceKey': public_key,
                       'LAWD_CD': region_code,
                       'DEAL_YMD': date,
                       'numOfRows': 99999
@@ -230,10 +234,13 @@ def collect(logger, mysql_con, mysql_cursor, region_code, date, public_keys):
                     fail_count += 1
             return True
         except Exception as e:
-            useKeyIndex += 1
-            if useKeyIndex >= len(public_keys):
-                useKeyIndex = 0
-            logger.error(f"error {e} {useKeyIndex}")
+            logger.error(f"error {e}")
+            retry_count += 1
+            if retry_count > MAX_RETRY:
+                logger.error(f"retry count exceeded {MAX_RETRY}")
+                break
+            logger.error(f"retry after {RETRY_DURATION} seconds ....")
+            time.sleep(RETRY_DURATION)
 
     logger.error ("failed!")
 
@@ -262,11 +269,17 @@ def main(args):
     #TEST CODE
     # collect(logger, mysql_con, mysql_cursor, '11680', '202311')
     # return
+    start_code = args.start_code
+    started = True
+    if start_code:
+        started = False
 
     for code in codes:
         # if code[0] == '법정동코드' or code[1] == '서울특별시':
         #     logger.info(f"skip {code}")
         #     continue
+
+
         if code['deleted'] == '폐지':
             logger.info (f"skip {code}")
             continue
@@ -281,9 +294,16 @@ def main(args):
 
         region_code = code["leg_dong_code"][0:5]
         logger.info(region_code)
+        if not started:
+            if region_code != start_code:
+                logger.info (f"skip {code} until... {start_code}")
+                continue
+            started = True
+            logger.info (f"start {code}")
+        
         if region_code == prev_code:
-          logger.info("same code")
-          continue
+            logger.info("same code")
+            continue
 
         result = True
         prev_code = region_code
@@ -331,6 +351,14 @@ if __name__ == '__main__':
         "--db",
         type=str,
         help="db config file path",
+    )
+
+
+    parser.add_argument(
+        "--start_code",
+        type=str,
+        default=None,
+        help="start region code",
     )
     # parser.add_argument(
     #     "--codes",

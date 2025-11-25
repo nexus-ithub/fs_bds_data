@@ -12,7 +12,7 @@ CREATE TABLE `address_polygon` (
   SPATIAL KEY `idx_lng` (`polygon`),
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `individual_announced_price` (
@@ -36,7 +36,7 @@ CREATE TABLE `individual_announced_price` (
   UNIQUE KEY `idx_id_year_month` (`id`,`year`,`month`),
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`)
-) ENGINE=InnoDB AUTO_INCREMENT=36575416 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `land_char_info` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -77,7 +77,7 @@ CREATE TABLE `land_char_info` (
   KEY `idx_area` (`area`),
   KEY `idx_usage1_name` (`usage1_name`),
   KEY `idx_create_date` (`create_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=12871863 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `land_info` (
@@ -102,7 +102,7 @@ CREATE TABLE `land_info` (
   PRIMARY KEY (`id`),
   KEY `idx_jibun` (`jibun`),
   KEY `idx_leg_dong_code` (`leg_dong_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `land_usage_code` (
@@ -127,7 +127,7 @@ CREATE TABLE `land_usage_code` (
   `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`code`),
   KEY `idx_usage_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 CREATE TABLE `land_usage_info` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
@@ -152,7 +152,7 @@ CREATE TABLE `land_usage_info` (
   KEY `idx_id` (`id`),
   KEY `idx_leg_dong_code` (`leg_dong_code`),
   KEY `idx_jibun` (`jibun`)
-) ENGINE=InnoDB AUTO_INCREMENT=8783539 DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);
 
 
 CREATE TABLE `leg_dong_codes` (
@@ -162,4 +162,4 @@ CREATE TABLE `leg_dong_codes` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`leg_dong_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=uca1400_ai_ci;
+);

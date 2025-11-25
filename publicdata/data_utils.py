@@ -8,6 +8,8 @@ def get_dataname_by_type(type):
         return "건물DB(월변동자료)"
     elif type == "building_leg_headline":
         return "건축물대장(표제부)"
+    elif type == "building_sub_addr":
+        return "건축물대장(부속지번)"
     elif type == "building_floor_info":
         return "건축물대장(층별개요)"
     elif type == "land_info":

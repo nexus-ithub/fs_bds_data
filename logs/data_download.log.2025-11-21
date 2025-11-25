@@ -1,0 +1,22 @@
+[2025/11/21 03:25:21 PM] INFO:START individual_announced_price
+[2025/11/21 03:25:21 PM] INFO:prev file size : 0
+[2025/11/21 03:25:21 PM] INFO:download_land_data individual_announced_price 개별공시지가정보
+[2025/11/21 03:25:21 PM] INFO:====== WebDriver manager ======
+[2025/11/21 03:25:25 PM] INFO:Get LATEST chromedriver version for google-chrome
+[2025/11/21 03:25:26 PM] INFO:Get LATEST chromedriver version for google-chrome
+[2025/11/21 03:25:26 PM] INFO:Driver [/Users/sungeunkim/.wdm/drivers/chromedriver/mac64/142.0.7444.175/chromedriver-mac-arm64/chromedriver] found in cache
+[2025/11/21 03:25:42 PM] WARNING:Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104810410>: Failed to establish a new connection: [Errno 61] Connection refused')': /session/8662732e0e0017fe23a3e202ee3cc00b
+[2025/11/21 03:25:42 PM] WARNING:Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104810a50>: Failed to establish a new connection: [Errno 61] Connection refused')': /session/8662732e0e0017fe23a3e202ee3cc00b
+[2025/11/21 03:25:42 PM] WARNING:Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104811010>: Failed to establish a new connection: [Errno 61] Connection refused')': /session/8662732e0e0017fe23a3e202ee3cc00b
+[2025/11/21 03:25:42 PM] ERROR:ERROR ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025/11/21 03:25:42 PM] INFO:END
+[2025/11/21 03:25:46 PM] INFO:START individual_announced_price
+[2025/11/21 03:25:46 PM] INFO:prev file size : 0
+[2025/11/21 03:25:46 PM] INFO:download_land_data individual_announced_price 개별공시지가정보
+[2025/11/21 03:25:46 PM] INFO:====== WebDriver manager ======
+[2025/11/21 03:25:46 PM] INFO:Get LATEST chromedriver version for google-chrome
+[2025/11/21 03:25:46 PM] INFO:Get LATEST chromedriver version for google-chrome
+[2025/11/21 03:25:46 PM] INFO:Driver [/Users/sungeunkim/.wdm/drivers/chromedriver/mac64/142.0.7444.175/chromedriver-mac-arm64/chromedriver] found in cache
+[2025/11/21 03:26:05 PM] ERROR:ERROR Message: 
+
+[2025/11/21 03:26:05 PM] INFO:END

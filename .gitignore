@@ -67,3 +67,6 @@ uploads/
 .vscode
 config/ 
 publicdata/data/
+
+
+venv/
