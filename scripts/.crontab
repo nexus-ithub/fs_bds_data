@@ -4,3 +4,4 @@
 0 20 * * 2,4 root bash /data/fs_bds_ai/fs_bds_data/scripts/download_distinct_files.sh
 0 20 * * 5,6 root bash /data/fs_bds_ai/fs_bds_data/scripts/download_building_files.sh
 0 0 * * * root bash /data/fs_bds_ai/fs_bds_data/scripts/update_data.sh
+0 3 */14 * * root bash /data/fs_bds_ai/fs_bds_data/scripts/naver_rent_info.sh

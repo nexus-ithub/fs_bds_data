@@ -1,21 +1,13 @@
 import argparse
-import datetime
 import time
-from turtle import position
 
-import numpy as np
 import requests
-import xmltodict
-import pandas as pd
 import json
 import mysql.connector
-import csv
-from util import get_last_months, create_logger
-import ssl
-import certifi
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from typing import Dict, List, Tuple, Iterator
+from utils.logger import create_logger
+from typing import Dict, Tuple, Iterator
+from utils.telegramBot import TelegramBot
+import asyncio
 
 RETRY_DURATION = 60 * 60 * 1 # 1 hours
 MAX_RETRY = 16
@@ -239,7 +231,7 @@ def collect(logger,  mysql_con, mysql_cursor, session: requests.Session,
     return False
 
 
-def main(args):
+async def main(args):
     logger = create_logger(args.logdir, f'collect_rent_info', backupCount=10)
  
     file_db = open(f"{args.db}", 'r')
@@ -247,69 +239,85 @@ def main(args):
     mysql_con = mysql.connector.connect(host=db["DB_HOST"], port=db["DB_PORT"], database=db["DB_NAME"],
                                         user=db["DB_USER"],
                                         password=db["DB_PASS"])
-    mysql_cursor = mysql_con.cursor(dictionary=True)
 
-    mysql_cursor.execute(SQL_BOUNDS)
-    position = mysql_cursor.fetchall()[0]
+    config_name = db["NAME"]
+
+    bot = TelegramBot(db["TG_TOKEN"], db["TG_CID"])
+
+    await bot.send_message(f"[{config_name}] 네이버 임대정보 수집시작")
     
-    left_top_lng = position["left_top_lng"]
-    left_top_lat = position["left_top_lat"]
-    right_bottom_lng = position["right_bottom_lng"]
-    right_bottom_lat = position["right_bottom_lat"]
 
-  
-    step_lat, step_lng = compute_steps(REQUEST_INTERVAL)
-    zoom = int(REQUEST_INTERVAL.get("z", 17))
+    try:
+        mysql_cursor = mysql_con.cursor(dictionary=True)
 
-    logger.info(f"[INFO] bounds="
-          f"({left_top_lng:.6f},{left_top_lat:.6f}) → ({right_bottom_lng:.6f},{right_bottom_lat:.6f})")
-    logger.info(f"[INFO] step_lat={step_lat:.7f}, step_lng={step_lng:.7f}, zoom={zoom}")
+        mysql_cursor.execute(SQL_BOUNDS)
+        position = mysql_cursor.fetchall()[0]
+        
+        left_top_lng = position["left_top_lng"]
+        left_top_lat = position["left_top_lat"]
+        right_bottom_lng = position["right_bottom_lng"]
+        right_bottom_lat = position["right_bottom_lat"]
 
-    row = 0
-    total_count = 0
-    session = requests.Session()
-    started = True
-    start_left = None
-    start_top = None
     
-    if args.start_left is not None:
-        start_left = args.start_left
-        started = False
-    if args.start_top is not None:
-        start_top = args.start_top
-        started = False
+        step_lat, step_lng = compute_steps(REQUEST_INTERVAL)
+        zoom = int(REQUEST_INTERVAL.get("z", 17))
 
-    for top in frange(left_top_lat, right_bottom_lat, step_lat):  # 감소 방향
-        bottom = max(top - step_lat, right_bottom_lat)
-        col = 0
-        for left in frange(left_top_lng, right_bottom_lng, step_lng):  # 증가 방향
-            right = min(left + step_lng, right_bottom_lng)
-            logger.info(f"\n[TILE r{row} c{col}] "
-                    f"top={top:.6f}, bottom={bottom:.6f}, left={left:.6f}, right={right:.6f}")
+        logger.info(f"[INFO] bounds="
+            f"({left_top_lng:.6f},{left_top_lat:.6f}) → ({right_bottom_lng:.6f},{right_bottom_lat:.6f})")
+        logger.info(f"[INFO] step_lat={step_lat:.7f}, step_lng={step_lng:.7f}, zoom={zoom}")
 
-            if not started:
-                if (start_left is not None and left == start_left) and (start_top is not None and top == start_top):
-                    started = True
-                else:
-                    continue   
+        
+        row = 0
+        total_count = 0
+        session = requests.Session()
+        started = True
+        start_left = None
+        start_top = None
+        
+        if args.start_left is not None:
+            start_left = args.start_left
+            started = False
+        if args.start_top is not None:
+            start_top = args.start_top
+            started = False
 
-            total_count += 1        
-            collect(logger, mysql_con, mysql_cursor, session, left=left, right=right, bottom=bottom, top=top, zoom=zoom)
-            
-            logger.info(f"collect NEXT bounds after {NEXT_BOUND_DELAY} seconds...")
-            if not started:
-                time.sleep(NEXT_BOUND_DELAY)
-            
-            col += 1
-        row += 1
+        for top in frange(left_top_lat, right_bottom_lat, step_lat):  # 감소 방향
+            bottom = max(top - step_lat, right_bottom_lat)
+            col = 0
+            for left in frange(left_top_lng, right_bottom_lng, step_lng):  # 증가 방향
+                right = min(left + step_lng, right_bottom_lng)
+                logger.info(f"\n[TILE r{row} c{col}] "
+                        f"top={top:.6f}, bottom={bottom:.6f}, left={left:.6f}, right={right:.6f}")
+
+                if not started:
+                    if (start_left is not None and left == start_left) and (start_top is not None and top == start_top):
+                        started = True
+                    else:
+                        continue   
+
+                total_count += 1        
+                collect(logger, mysql_con, mysql_cursor, session, left=left, right=right, bottom=bottom, top=top, zoom=zoom)
+                
+                logger.info(f"collect NEXT bounds after {NEXT_BOUND_DELAY} seconds...")
+                if not started:
+                    time.sleep(NEXT_BOUND_DELAY)
+                
+                col += 1
+            row += 1
 
 
+        mysql_cursor.close()
+        mysql_con.close()
 
-    mysql_cursor.close()
-    mysql_con.close()
-
-    logger.info(f"total_count : {total_count}")
-    logger.info(f"END")
+        await bot.send_message(f"[{config_name}] 네이버 임대정보 수집완료 - 총갯수 : {total_count}")
+        logger.info(f"total_count : {total_count}")
+        logger.info(f"END")        
+    except Exception as e:
+        logger.error(f"error in main: {e}")
+        await bot.send_message(f"[{config_name}] 네이버 임대정보 수집 중 오류 발생: {str(e)[:100]}")
+        return False
+    
+   
 
 
 if __name__ == '__main__':
@@ -319,7 +327,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--logdir",
         type=str,
-        default='./',
+        default='../logs/',
         help="log directory",
     )
 
@@ -341,9 +349,7 @@ if __name__ == '__main__':
         help="start top",
     )
 
-   
-
-
     args = parser.parse_args()
 
-    main(args)
+
+    asyncio.run(main(args))
