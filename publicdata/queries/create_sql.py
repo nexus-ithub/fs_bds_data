@@ -58,7 +58,7 @@ CREATE_NEW_LAND_CHAR_INFO \
 
 
 CREATE_NEW_LAND_USAGE_INFO \
-    = "CREATE TABLE `land_usage_info_new` (`\
+    = "CREATE TABLE `land_usage_info_new` (\
   `key` int(11) NOT NULL AUTO_INCREMENT,\
   `id` varchar(19) DEFAULT NULL COMMENT '고유번호',\
   `leg_dong_code` varchar(10) DEFAULT NULL COMMENT '법정동코드',\
@@ -251,4 +251,31 @@ CREATE_NEW_BUILDING_SUB_ADDR = "create table building_sub_addr_new\
     updated_at             datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
     created_at             datetime DEFAULT current_timestamp()\
 );"
+
+
+CREATE_NEW_BUILDING_REPAIR = "create table building_repair_new\
+(\
+  `key` int(11) NOT NULL AUTO_INCREMENT,\
+  `building_id` varchar(33) DEFAULT NULL COMMENT '관리_허가대장_PK',\
+  `site_loc` varchar(500) DEFAULT NULL COMMENT '대지_위치',\
+  `building_name` varchar(100) DEFAULT NULL COMMENT '건물_명',\
+  `sigungu_code` varchar(5) DEFAULT NULL COMMENT '시군구_코드',\
+  `leg_dong_code` varchar(5) DEFAULT NULL COMMENT '법정동_코드',\
+  `site_div_code` varchar(1) DEFAULT NULL COMMENT '대지_구분_코드',\
+  `bun` varchar(4) DEFAULT NULL COMMENT '번',\
+  `ji` varchar(4) DEFAULT NULL COMMENT '지',\
+  `specialji_name` varchar(200) DEFAULT NULL COMMENT '특수지_명',\
+  `block` varchar(20) DEFAULT NULL COMMENT '블록',\
+  `lot` varchar(20) DEFAULT NULL COMMENT '로트',\
+  `repair_div_code` varchar(2) DEFAULT NULL COMMENT '대수선_구분_코드',\
+  `repair_div_code_name` varchar(100) DEFAULT NULL COMMENT '대수선_구분_코드_명',\
+  `repair_change_div_code` char(1) DEFAULT NULL COMMENT '대수선_변경_구분_코드',\
+  `repair_change_div_code_name` varchar(100) DEFAULT NULL COMMENT '대수선_변경_구분_코드_명',\
+  `create_date` varchar(8) DEFAULT NULL COMMENT '생성_일자',\
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),\
+  `created_at` datetime DEFAULT current_timestamp(),\
+  PRIMARY KEY (`key`)\
+);"
+
+
 

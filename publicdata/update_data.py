@@ -12,7 +12,7 @@ from data_utils import get_dataname_by_type
 from queries.search import CREATE_SEARCH_NEW
 from utils.telegramBot import TelegramBot
 from queries.create_sql import CREATE_NEW_INDIVIDUAL_ANNOUNCED_PRICE, CREATE_NEW_LAND_CHAR_INFO, \
-    CREATE_NEW_LAND_USAGE_INFO, CREATE_NEW_BUILDING_LEG_HEADLINE, CREATE_NEW_BUILDING_FLOOR_INFO, CREATE_NEW_BUILDING_SUB_ADDR
+    CREATE_NEW_LAND_USAGE_INFO, CREATE_NEW_BUILDING_LEG_HEADLINE, CREATE_NEW_BUILDING_FLOOR_INFO, CREATE_NEW_BUILDING_SUB_ADDR, CREATE_NEW_BUILDING_REPAIR
 from queries.address import update_address_info_query
 from utils.logger import create_logger
 from utils.files import read_csv
@@ -261,6 +261,8 @@ def create_new_table(cursor, type):
         create_sql = CREATE_NEW_BUILDING_FLOOR_INFO
     elif type == "building_sub_addr":
         create_sql = CREATE_NEW_BUILDING_SUB_ADDR
+    elif type == "building_repair":
+        create_sql = CREATE_NEW_BUILDING_REPAIR
     elif type == "address_search":
         create_sql = CREATE_SEARCH_NEW
 
@@ -407,52 +409,11 @@ def update_building_leg_headline(cursor, path, type):
 
     logger.info(f"create idx_use_approval_date...")
     cursor.execute(
-        "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+        "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_leg_headline_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
   
     logger.info(f"create idx_bunji...")
     cursor.execute(
         "CREATE INDEX `idx_bun_ji` ON `fs_bds`.`building_leg_headline_new` (bun, ji, leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-
-    # logger.info(f"create building_search_new...")
-    # cursor.execute(
-    #     "create table fs_bds.building_search_new (primary key (building_id)) "
-    #     "AS SELECT building_id, site_loc, sigungu_code, bun, ji, leg_dong_code_val, use_approval_date, total_floor_area, land_area "
-    #     "FROM fs_bds.building_leg_headline")
-
-    # logger.info(f"create idx_site_loc...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_site_loc` ON `fs_bds`.`building_search_new` (site_loc) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-    # logger.info(f"create idx_sigungu_code...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_sigungu_code` ON `fs_bds`.`building_search_new` (sigungu_code) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-    # logger.info(f"create idx_land_area...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_land_area` ON `fs_bds`.`building_search_new` (land_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-    # logger.info(f"create idx_total_floor_area...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_total_floor_area` ON `fs_bds`.`building_search_new` (total_floor_area) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-    # logger.info(f"create idx_use_approval_date...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_use_approval_date` ON `fs_bds`.`building_search_new` (use_approval_date) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    # logger.info(f"create idx_bun...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_bun` ON `fs_bds`.`building_search_new` (bun) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    # logger.info(f"create idx_ji...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_ji` ON `fs_bds`.`building_search_new` (ji) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-    # logger.info(f"create idx_leg_dong_code...")
-    # cursor.execute(
-    #     "CREATE INDEX `idx_leg_dong_code_val` ON `fs_bds`.`building_search_new` (leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
-
-    # change_as_new_table(cursor, "building_search")
-
-  # make building search table
-    # drop_table_if_exist(cursor, "building_search_new")
 
 
     change_as_new_table(cursor, "building_leg_headline")
@@ -539,6 +500,24 @@ def update_building_sub_addr(cursor, path, type):
     logger.info(f"update {type} end")
 
     return update_count
+
+
+def update_building_repair(cursor, path, type):    
+    logger.info(f"updating {type} data")
+    
+    update_count = updateDataToTable(cursor, path, type, 16, "", delimeter='|', encoding='utf-8', quoting=csv.QUOTE_NONE)
+
+    logger.info(f"make leg_dong_code_val...")
+    cursor.execute(
+        "UPDATE fs_bds.building_repair SET leg_dong_code_val = concat(sigungu_code, leg_dong_code)")
+    
+    logger.info(f"create idx_bunji...")
+    cursor.execute(
+        "CREATE INDEX `idx_bun_ji` ON `fs_bds`.`building_repair` (bun, ji, leg_dong_code_val) COMMENT '' ALGORITHM DEFAULT LOCK NONE")
+
+    return update_count
+
+
 
 
 def update_individual_announce_price_data(cursor, path, type):
@@ -737,6 +716,8 @@ def update_data(cursor, path, type):
         return update_building_floor_info(cursor, path, type)
     elif type == 'building_sub_addr':
         return update_building_sub_addr(cursor, path, type)        
+    elif type == 'building_repair':
+        return update_building_repair(cursor, path, type)                
     elif type == 'land_info':
         return updateDataToTable(cursor, path, type, 16, "고유번호")
     elif type == 'land_char_info':
